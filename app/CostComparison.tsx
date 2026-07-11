@@ -157,16 +157,12 @@ export function CostComparison() {
         cost:
           mode === "task"
             ? taskCost(model, selectedUseCase)
-            : useCases.reduce(
-                (total, useCase) =>
-                  total + taskCost(model, useCase) * useCase.monthlyCount,
-                0,
-              ),
+            : taskCost(model, selectedUseCase) * selectedUseCase.monthlyCount,
       }))
       .sort((a, b) =>
         sortDirection === "asc" ? a.cost - b.cost : b.cost - a.cost,
       );
-  }, [mode, providers, selectedUseCase, sortDirection, useCases]);
+  }, [mode, providers, selectedUseCase, sortDirection]);
 
   const maxCost = Math.max(...results.map((result) => result.cost), 0.000001);
 
@@ -302,7 +298,11 @@ export function CostComparison() {
       <section className="chart-section" aria-labelledby="chart-title">
         <div className="chart-heading">
           <div>
-            <p>{mode === "task" ? selectedUseCase.label : "設定した月間利用量"}</p>
+            <p>
+              {mode === "task"
+                ? selectedUseCase.label
+                : `${selectedUseCase.label} × 月${selectedUseCase.monthlyCount}回`}
+            </p>
             <h2 id="chart-title">{mode === "task" ? "1タスクあたり" : "1か月あたり"}</h2>
           </div>
           <div className="chart-options">
@@ -349,7 +349,7 @@ export function CostComparison() {
 
       <footer>
         <p>
-          単価は100万トークンあたり。最終更新 {pricingData.updatedAt}。料金は税、ツール利用料、長文割増を含みません。
+          Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
         </p>
         <details>
           <summary>現在の単価を見る</summary>

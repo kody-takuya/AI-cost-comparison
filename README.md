@@ -36,6 +36,16 @@ npm ci
 npm run dev
 ```
 
+GitHub Pages用の静的ビルド:
+
+```bash
+npm run build:pages
+```
+
+リポジトリの Settings → Pages → Build and deployment → Source で
+`GitHub Actions` を選ぶと、`main` 更新時に `.github/workflows/deploy-pages.yml`
+が `pages-dist` を公開します。
+
 検証:
 
 ```bash

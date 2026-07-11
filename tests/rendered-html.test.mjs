@@ -25,6 +25,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /長文の要約/);
   assert.match(html, /安い順/);
   assert.match(html, /高い順/);
+  assert.match(html, /Last updated:/);
   assert.match(html, /タスク単価/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
 });

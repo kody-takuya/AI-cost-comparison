@@ -18,9 +18,13 @@ test("renders the LLM cost comparison", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ja">/i);
   assert.match(html, /<title>LLM Cost/);
-  assert.match(html, /タスクで比べる、LLM料金/);
+  assert.match(html, /LLM Cost Comparison/);
   assert.match(html, /GPT-5\.6 Sol/);
   assert.match(html, /DeepSeek V4 Pro/);
+  assert.match(html, /Claude Sonnet 5/);
+  assert.match(html, /長文の要約/);
+  assert.match(html, /安い順/);
+  assert.match(html, /高い順/);
   assert.match(html, /タスク単価/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
 });

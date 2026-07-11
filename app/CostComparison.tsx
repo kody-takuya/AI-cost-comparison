@@ -61,6 +61,46 @@ const defaultUseCases: UseCase[] = [
     cacheRead: 25_000,
     monthlyCount: 40,
   },
+  {
+    id: "summarization",
+    label: "長文の要約",
+    description: "長い文書・議事録を短く整理",
+    input: 100_000,
+    output: 5_000,
+    cacheWrite: 0,
+    cacheRead: 0,
+    monthlyCount: 30,
+  },
+  {
+    id: "data-analysis",
+    label: "データ分析",
+    description: "表データを読み、傾向と示唆を出力",
+    input: 60_000,
+    output: 15_000,
+    cacheWrite: 20_000,
+    cacheRead: 40_000,
+    monthlyCount: 20,
+  },
+  {
+    id: "translation",
+    label: "翻訳",
+    description: "まとまった文書を別言語へ翻訳",
+    input: 25_000,
+    output: 28_000,
+    cacheWrite: 2_000,
+    cacheRead: 5_000,
+    monthlyCount: 50,
+  },
+  {
+    id: "extraction",
+    label: "構造化抽出",
+    description: "文書から項目を抽出しJSON化",
+    input: 40_000,
+    output: 3_000,
+    cacheWrite: 5_000,
+    cacheRead: 15_000,
+    monthlyCount: 100,
+  },
 ];
 
 const tokenFields: { key: TokenKey; label: string }[] = [
@@ -95,10 +135,15 @@ function displayCost(value: number) {
 
 export function CostComparison() {
   const [mode, setMode] = useState<"task" | "monthly">("task");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [useCases, setUseCases] = useState(defaultUseCases);
   const [activeUseCase, setActiveUseCase] = useState(defaultUseCases[0].id);
+  const uniqueProviders = useMemo(
+    () => [...new Set(pricingData.models.map((model) => model.provider))],
+    [],
+  );
   const [providers, setProviders] = useState(() =>
-    Object.fromEntries(pricingData.models.map((model) => [model.provider, true])),
+    Object.fromEntries(uniqueProviders.map((provider) => [provider, true])),
   );
 
   const selectedUseCase =
@@ -118,8 +163,10 @@ export function CostComparison() {
                 0,
               ),
       }))
-      .sort((a, b) => a.cost - b.cost);
-  }, [mode, providers, selectedUseCase, useCases]);
+      .sort((a, b) =>
+        sortDirection === "asc" ? a.cost - b.cost : b.cost - a.cost,
+      );
+  }, [mode, providers, selectedUseCase, sortDirection, useCases]);
 
   const maxCost = Math.max(...results.map((result) => result.cost), 0.000001);
 
@@ -142,10 +189,7 @@ export function CostComparison() {
   return (
     <main className="site-shell">
       <header className="site-header">
-        <div>
-          <p className="eyebrow">LLM API COST</p>
-          <h1>タスクで比べる、LLM料金</h1>
-        </div>
+        <h1>LLM Cost Comparison</h1>
         <div className="mode-switch" aria-label="計算モード">
           <button
             type="button"
@@ -233,7 +277,7 @@ export function CostComparison() {
             onClick={() =>
               setProviders(
                 Object.fromEntries(
-                  pricingData.models.map((model) => [model.provider, !allVisible]),
+                  uniqueProviders.map((provider) => [provider, !allVisible]),
                 ),
               )
             }
@@ -242,14 +286,14 @@ export function CostComparison() {
           </button>
         </div>
         <div className="filter-list">
-          {pricingData.models.map((model) => (
-            <label key={model.provider}>
+          {uniqueProviders.map((provider) => (
+            <label key={provider}>
               <input
                 type="checkbox"
-                checked={providers[model.provider]}
-                onChange={() => toggleProvider(model.provider)}
+                checked={providers[provider]}
+                onChange={() => toggleProvider(provider)}
               />
-              <span>{model.provider}</span>
+              <span>{provider}</span>
             </label>
           ))}
         </div>
@@ -261,7 +305,21 @@ export function CostComparison() {
             <p>{mode === "task" ? selectedUseCase.label : "設定した月間利用量"}</p>
             <h2 id="chart-title">{mode === "task" ? "1タスクあたり" : "1か月あたり"}</h2>
           </div>
-          <span>USD・API標準料金</span>
+          <div className="chart-options">
+            <span>USD・API標準料金</span>
+            <label>
+              <span className="sr-only">並び順</span>
+              <select
+                value={sortDirection}
+                onChange={(event) =>
+                  setSortDirection(event.target.value as "asc" | "desc")
+                }
+              >
+                <option value="asc">安い順</option>
+                <option value="desc">高い順</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <div className="chart" role="list" aria-label="モデル別料金">

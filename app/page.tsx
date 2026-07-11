@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CostComparison } from "./CostComparison";
 
 export const metadata: Metadata = {
-  title: "LLM Cost — タスク別API料金比較",
+  title: "LLM Cost Comparison",
   description: "主要LLMのAPI料金を、実際のユースケース別トークン量で比較します。",
 };
 

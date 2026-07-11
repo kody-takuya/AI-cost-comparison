@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
-  const title = "LLM Cost — タスク別API料金比較";
+  const title = "LLM Cost Comparison";
   const description = "主要LLMのAPI料金を、実際のユースケース別トークン量で比較します。";
 
   return {

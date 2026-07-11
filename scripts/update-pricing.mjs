@@ -41,6 +41,10 @@ const checks = [
       const match = text.match(/Sol is \$([\d.]+) input \/ \$([\d.]+) output/i);
       if (!match) throw new Error("GPT-5.6 Sol prices not found");
       const input = Number(match[1]);
+      const terra = text.match(/Terra is \$([\d.]+) input \/ \$([\d.]+) output/i);
+      const luna = text.match(/Luna is \$([\d.]+) input \/ \$([\d.]+) output/i);
+      if (terra) update("gpt-5.6-terra", { input: Number(terra[1]), output: Number(terra[2]), cacheWrite: Number(terra[1]) * 1.25, cacheRead: Number(terra[1]) * 0.1 });
+      if (luna) update("gpt-5.6-luna", { input: Number(luna[1]), output: Number(luna[2]), cacheWrite: Number(luna[1]) * 1.25, cacheRead: Number(luna[1]) * 0.1 });
       return { input, output: Number(match[2]), cacheWrite: input * 1.25, cacheRead: input * 0.1 };
     },
   },
@@ -66,6 +70,19 @@ const checks = [
     },
   },
   {
+    id: "grok-4.3",
+    url: "https://docs.x.ai/developers/pricing",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("grok-4.3"), text.indexOf("Imagine API"));
+      const values = [...segment.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
+      if (values.length < 3) throw new Error("Grok 4.3 prices not found");
+      const build = text.slice(text.indexOf("grok-build-0.1"), text.indexOf("Chat API"));
+      const buildValues = [...build.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
+      if (buildValues.length >= 3) update("grok-build-0.1", { input: buildValues[0], cacheRead: buildValues[1], cacheWrite: buildValues[0], output: buildValues[2] });
+      return { input: values[0], cacheRead: values[1], cacheWrite: values[0], output: values[2] };
+    },
+  },
+  {
     id: "gemini-3.5-flash",
     url: "https://ai.google.dev/gemini-api/docs/pricing",
     parse: (text) => {
@@ -74,6 +91,30 @@ const checks = [
       const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
       const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
       if (!input || !output || !cacheRead) throw new Error("Gemini 3.5 Flash prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
+  },
+  {
+    id: "gemini-3-flash",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("Gemini 3 Flash"), text.indexOf("Gemini 3.1 Flash-Lite"));
+      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
+      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
+      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Gemini 3 Flash prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
+  },
+  {
+    id: "gemini-3.1-flash-lite",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("Gemini 3.1 Flash-Lite"), text.indexOf("Gemini 2.5 Flash"));
+      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
+      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
+      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Gemini 3.1 Flash-Lite prices not found");
       return { input, output, cacheWrite: input, cacheRead };
     },
   },
@@ -89,6 +130,16 @@ const checks = [
     },
   },
   {
+    id: "minimax-m2.7",
+    url: "https://platform.minimax.io/subscribe/token-plan?tab=api-enterprise",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("MiniMax-M2.7"), text.indexOf("MiniMax-M2.7-highspeed"));
+      const values = [...segment.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
+      if (values.length < 4) throw new Error("MiniMax M2.7 prices not found");
+      return { input: values[0], output: values[1], cacheRead: values[2], cacheWrite: values[3] };
+    },
+  },
+  {
     id: "kimi-k2.7-code",
     url: "https://www.kimi.com/en/resources/kimi-k2-7-code",
     parse: (text) => {
@@ -97,6 +148,17 @@ const checks = [
       const input = Number(segment.match(/Cache Miss\D+\$([\d.]+)/i)?.[1]);
       const output = Number(segment.match(/Output Price\D+\$([\d.]+)/i)?.[1]);
       if (!input || !output || !cacheRead) throw new Error("Kimi K2.7 prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
+  },
+  {
+    id: "kimi-k2.6",
+    url: "https://platform.kimi.ai/docs/pricing/chat-k26",
+    parse: (text) => {
+      const cacheRead = Number(text.match(/Input Price \(Cache Hit\)[^$]*\$([\d.]+)/i)?.[1]);
+      const input = Number(text.match(/Input Price \(Cache Miss\)[^$]*\$([\d.]+)/i)?.[1]);
+      const output = Number(text.match(/Output Price[^$]*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Kimi K2.6 prices not found");
       return { input, output, cacheWrite: input, cacheRead };
     },
   },
@@ -120,6 +182,7 @@ const checks = [
       const cacheRead = rows[1];
       const input = rows[3];
       const output = rows[5];
+      update("deepseek-v4-flash", { cacheRead: rows[0], input: rows[2], cacheWrite: rows[2], output: rows[4] });
       return { input, output, cacheWrite: input, cacheRead };
     },
   },

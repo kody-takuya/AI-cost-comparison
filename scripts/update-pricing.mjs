@@ -83,6 +83,30 @@ const checks = [
     },
   },
   {
+    id: "gemini-3.6-flash",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("Gemini 3.6 Flash"), text.indexOf("Gemini 3.5 Flash-Lite"));
+      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
+      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
+      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Gemini 3.6 Flash prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
+  },
+  {
+    id: "gemini-3.5-flash-lite",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("Gemini 3.5 Flash-Lite"), text.indexOf("Gemini 3.1 Flash-Lite"));
+      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
+      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
+      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Gemini 3.5 Flash-Lite prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
+  },
+  {
     id: "gemini-3.5-flash",
     url: "https://ai.google.dev/gemini-api/docs/pricing",
     parse: (text) => {
@@ -137,6 +161,18 @@ const checks = [
       const values = [...segment.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
       if (values.length < 4) throw new Error("MiniMax M2.7 prices not found");
       return { input: values[0], output: values[1], cacheRead: values[2], cacheWrite: values[3] };
+    },
+  },
+  {
+    id: "kimi-k3",
+    url: "https://platform.kimi.ai/",
+    parse: (text) => {
+      const segment = text.slice(text.indexOf("K3"));
+      const cacheRead = Number(segment.match(/Cache Hit\s*\$([\d.]+)/i)?.[1]);
+      const input = Number(segment.match(/Input\s*\$([\d.]+)/i)?.[1]);
+      const output = Number(segment.match(/Output\s*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Kimi K3 prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
     },
   },
   {

@@ -22,6 +22,9 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /GPT-5\.6 Sol/);
   assert.match(html, /DeepSeek V4 Pro/);
   assert.match(html, /Claude Sonnet 5/);
+  assert.match(html, /Gemini 3\.6 Flash/);
+  assert.match(html, /Gemini 3\.5 Flash-Lite/);
+  assert.match(html, /Kimi K3/);
   assert.match(html, /長文の要約/);
   assert.match(html, /安い順/);
   assert.match(html, /高い順/);

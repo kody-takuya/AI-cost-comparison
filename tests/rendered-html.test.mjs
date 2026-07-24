@@ -20,6 +20,9 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /<title>LLM Cost/);
   assert.match(html, /LLM Cost Comparison/);
   assert.match(html, /GPT-5\.6 Sol/);
+  assert.match(html, /GPT-5\.4 Pro/);
+  assert.match(html, /GPT-5\.4 mini/);
+  assert.match(html, /GPT-5\.4 nano/);
   assert.match(html, /DeepSeek V4 Pro/);
   assert.match(html, /Claude Sonnet 5/);
   assert.match(html, /Gemini 3\.6 Flash/);
@@ -29,6 +32,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /安い順/);
   assert.match(html, /高い順/);
   assert.match(html, /Last updated:/);
+  assert.match(html, /通常単価 \/ 100万 tokens/);
   assert.match(html, /タスク単価/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
 });

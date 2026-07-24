@@ -133,6 +133,13 @@ function displayCost(value: number) {
   return usd.format(value);
 }
 
+function displayRate(value: number) {
+  return `$${value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6,
+  })}`;
+}
+
 export function CostComparison() {
   const [mode, setMode] = useState<"task" | "monthly">("task");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -323,8 +330,19 @@ export function CostComparison() {
         </div>
 
         <div className="chart" role="list" aria-label="モデル別料金">
-          {results.map(({ model, cost }) => (
-            <article className="bar-row" role="listitem" key={model.id}>
+          {results.map(({ model, cost }) => {
+            const tooltipId = `rates-${model.id}`;
+            const hasCacheDiscount =
+              !("cacheDiscount" in model) || model.cacheDiscount !== false;
+
+            return (
+            <article
+              className="bar-row"
+              role="listitem"
+              key={model.id}
+              tabIndex={0}
+              aria-describedby={tooltipId}
+            >
               <div className="model-name">
                 <strong>{model.name}</strong>
                 <span>{model.provider}</span>
@@ -339,8 +357,27 @@ export function CostComparison() {
               <a href={model.source} target="_blank" rel="noreferrer" aria-label={`${model.name}の公式料金ページ`}>
                 料金表
               </a>
+              <div className="rate-tooltip" id={tooltipId} role="tooltip">
+                <strong>通常単価 / 100万 tokens</strong>
+                <dl>
+                  <div><dt>入力</dt><dd>{displayRate(model.pricing.input)}</dd></div>
+                  <div><dt>出力</dt><dd>{displayRate(model.pricing.output)}</dd></div>
+                  {hasCacheDiscount ? (
+                    <>
+                      <div><dt>キャッシュ書込</dt><dd>{displayRate(model.pricing.cacheWrite)}</dd></div>
+                      <div><dt>キャッシュ読込</dt><dd>{displayRate(model.pricing.cacheRead)}</dd></div>
+                    </>
+                  ) : (
+                    <div className="cache-unavailable">
+                      <dt>キャッシュ</dt>
+                      <dd>割引なし（入力単価で計算）</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
             </article>
-          ))}
+            );
+          })}
           {results.length === 0 && (
             <p className="empty-state">表示するプロバイダーを選んでください。</p>
           )}
@@ -352,7 +389,7 @@ export function CostComparison() {
           Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
         </p>
         <details>
-          <summary>現在の単価を見る</summary>
+          <summary>全モデルの通常単価を見る</summary>
           <div className="rate-table-wrap">
             <table>
               <thead>
@@ -368,10 +405,16 @@ export function CostComparison() {
                 {pricingData.models.map((model) => (
                   <tr key={model.id}>
                     <td>{model.name}</td>
-                    <td>${model.pricing.input}</td>
-                    <td>${model.pricing.output}</td>
-                    <td>${model.pricing.cacheWrite}</td>
-                    <td>${model.pricing.cacheRead}</td>
+                    <td>{displayRate(model.pricing.input)}</td>
+                    <td>{displayRate(model.pricing.output)}</td>
+                    {"cacheDiscount" in model && model.cacheDiscount === false ? (
+                      <td colSpan={2}>割引なし</td>
+                    ) : (
+                      <>
+                        <td>{displayRate(model.pricing.cacheWrite)}</td>
+                        <td>{displayRate(model.pricing.cacheRead)}</td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

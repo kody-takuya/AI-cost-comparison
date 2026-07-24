@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-23",
+  "updatedAt": "2026-07-24",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -36,6 +36,55 @@
         "cacheRead": 0.1
       },
       "source": "https://openai.com/index/gpt-5-6/"
+    },
+    {
+      "id": "gpt-5.4",
+      "provider": "OpenAI",
+      "name": "GPT-5.4",
+      "pricing": {
+        "input": 2.5,
+        "output": 15,
+        "cacheWrite": 2.5,
+        "cacheRead": 0.25
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.4"
+    },
+    {
+      "id": "gpt-5.4-pro",
+      "provider": "OpenAI",
+      "name": "GPT-5.4 Pro",
+      "pricing": {
+        "input": 30,
+        "output": 180,
+        "cacheWrite": 30,
+        "cacheRead": 30
+      },
+      "cacheDiscount": false,
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.4-pro"
+    },
+    {
+      "id": "gpt-5.4-mini",
+      "provider": "OpenAI",
+      "name": "GPT-5.4 mini",
+      "pricing": {
+        "input": 0.75,
+        "output": 4.5,
+        "cacheWrite": 0.75,
+        "cacheRead": 0.075
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
+    },
+    {
+      "id": "gpt-5.4-nano",
+      "provider": "OpenAI",
+      "name": "GPT-5.4 nano",
+      "pricing": {
+        "input": 0.2,
+        "output": 1.25,
+        "cacheWrite": 0.2,
+        "cacheRead": 0.02
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.4-nano"
     },
     {
       "id": "claude-fable-5",
@@ -189,7 +238,7 @@
         "input": 0.25,
         "output": 1.5,
         "cacheWrite": 0.25,
-        "cacheRead": 0.03
+        "cacheRead": 0.025
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
@@ -342,10 +391,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.7706,
-        "output": 5.3118,
-        "cacheWrite": 2.21325,
-        "cacheRead": 0.17706
+        "input": 1.7724,
+        "output": 5.3172,
+        "cacheWrite": 2.2155,
+        "cacheRead": 0.17724
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

@@ -33,6 +33,18 @@ function update(id, nextPricing) {
   model.pricing = { ...model.pricing, ...nextPricing };
 }
 
+function parseOpenAITextRates(text, id, cacheDiscount = true) {
+  const match = text.match(
+    /Text tokens\s*Per 1M tokens[\s\S]{0,240}?Input\s*\$([\d.]+)(?:\s*Cached input\s*\$([\d.]+))?\s*Output\s*\$([\d.]+)/i,
+  );
+  if (!match) throw new Error(`${id} prices not found`);
+  const input = Number(match[1]);
+  const cachedInput = cacheDiscount ? Number(match[2]) : input;
+  const output = Number(match[3]);
+  if (!input || !cachedInput || !output) throw new Error(`${id} prices are invalid`);
+  return { input, output, cacheWrite: input, cacheRead: cachedInput };
+}
+
 const checks = [
   {
     id: "gpt-5.6-sol",
@@ -47,6 +59,26 @@ const checks = [
       if (luna) update("gpt-5.6-luna", { input: Number(luna[1]), output: Number(luna[2]), cacheWrite: Number(luna[1]) * 1.25, cacheRead: Number(luna[1]) * 0.1 });
       return { input, output: Number(match[2]), cacheWrite: input * 1.25, cacheRead: input * 0.1 };
     },
+  },
+  {
+    id: "gpt-5.4",
+    url: "https://developers.openai.com/api/docs/models/gpt-5.4",
+    parse: (text) => parseOpenAITextRates(text, "GPT-5.4"),
+  },
+  {
+    id: "gpt-5.4-pro",
+    url: "https://developers.openai.com/api/docs/models/gpt-5.4-pro",
+    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 Pro", false),
+  },
+  {
+    id: "gpt-5.4-mini",
+    url: "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 mini"),
+  },
+  {
+    id: "gpt-5.4-nano",
+    url: "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
+    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 nano"),
   },
   {
     id: "claude-fable-5",

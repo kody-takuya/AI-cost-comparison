@@ -70,11 +70,6 @@ const checks = [
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4"),
   },
   {
-    id: "gpt-5.4-pro",
-    url: "https://developers.openai.com/api/docs/models/gpt-5.4-pro",
-    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 Pro", false),
-  },
-  {
     id: "gpt-5.4-mini",
     url: "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4 mini"),

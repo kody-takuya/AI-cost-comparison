@@ -142,7 +142,7 @@ function displayRate(value: number) {
 
 export function CostComparison() {
   const [mode, setMode] = useState<"task" | "monthly">("task");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [useCases, setUseCases] = useState(defaultUseCases);
   const [activeUseCase, setActiveUseCase] = useState(defaultUseCases[0].id);
   const uniqueProviders = useMemo(

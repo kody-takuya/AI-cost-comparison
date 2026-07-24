@@ -20,7 +20,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /<title>LLM Cost/);
   assert.match(html, /LLM Cost Comparison/);
   assert.match(html, /GPT-5\.6 Sol/);
-  assert.match(html, /GPT-5\.4 Pro/);
+  assert.doesNotMatch(html, /GPT-5\.4 Pro/);
   assert.match(html, /GPT-5\.4 mini/);
   assert.match(html, /GPT-5\.4 nano/);
   assert.match(html, /DeepSeek V4 Pro/);

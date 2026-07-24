@@ -27,8 +27,10 @@ function update(id, nextPricing) {
   const model = byId.get(id);
   if (!model) throw new Error(`Unknown model: ${id}`);
   for (const [key, value] of Object.entries(nextPricing)) {
-    if (!Number.isFinite(value) || value < 0) throw new Error(`Invalid ${id}.${key}: ${value}`);
-    nextPricing[key] = Number(value.toFixed(6));
+    if (value !== null && (!Number.isFinite(value) || value < 0)) {
+      throw new Error(`Invalid ${id}.${key}: ${value}`);
+    }
+    nextPricing[key] = value === null ? null : Number(value.toFixed(6));
   }
   model.pricing = { ...model.pricing, ...nextPricing };
 }
@@ -39,10 +41,12 @@ function parseOpenAITextRates(text, id, cacheDiscount = true) {
   );
   if (!match) throw new Error(`${id} prices not found`);
   const input = Number(match[1]);
-  const cachedInput = cacheDiscount ? Number(match[2]) : input;
+  const cachedInput = cacheDiscount ? Number(match[2]) : null;
   const output = Number(match[3]);
-  if (!input || !cachedInput || !output) throw new Error(`${id} prices are invalid`);
-  return { input, output, cacheWrite: input, cacheRead: cachedInput };
+  if (!input || (cacheDiscount && !cachedInput) || !output) {
+    throw new Error(`${id} prices are invalid`);
+  }
+  return { input, output, cacheWrite: null, cacheRead: cachedInput };
 }
 
 const checks = [

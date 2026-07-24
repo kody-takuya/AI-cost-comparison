@@ -44,7 +44,7 @@
       "pricing": {
         "input": 2.5,
         "output": 15,
-        "cacheWrite": 2.5,
+        "cacheWrite": null,
         "cacheRead": 0.25
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-5.4"
@@ -56,10 +56,9 @@
       "pricing": {
         "input": 30,
         "output": 180,
-        "cacheWrite": 30,
-        "cacheRead": 30
+        "cacheWrite": null,
+        "cacheRead": null
       },
-      "cacheDiscount": false,
       "source": "https://developers.openai.com/api/docs/models/gpt-5.4-pro"
     },
     {
@@ -69,7 +68,7 @@
       "pricing": {
         "input": 0.75,
         "output": 4.5,
-        "cacheWrite": 0.75,
+        "cacheWrite": null,
         "cacheRead": 0.075
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
@@ -81,7 +80,7 @@
       "pricing": {
         "input": 0.2,
         "output": 1.25,
-        "cacheWrite": 0.2,
+        "cacheWrite": null,
         "cacheRead": 0.02
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-5.4-nano"

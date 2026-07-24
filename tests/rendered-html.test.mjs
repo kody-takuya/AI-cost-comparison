@@ -33,6 +33,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /高い順/);
   assert.match(html, /Last updated:/);
   assert.match(html, /通常単価 \/ 100万 tokens/);
+  assert.match(html, /Cached input/);
   assert.match(html, /タスク単価/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
 });

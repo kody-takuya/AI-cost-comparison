@@ -121,8 +121,8 @@ function taskCost(model: Model, useCase: UseCase) {
   return (
     (useCase.input * model.pricing.input +
       useCase.output * model.pricing.output +
-      useCase.cacheWrite * model.pricing.cacheWrite +
-      useCase.cacheRead * model.pricing.cacheRead) /
+      useCase.cacheWrite * (model.pricing.cacheWrite ?? model.pricing.input) +
+      useCase.cacheRead * (model.pricing.cacheRead ?? model.pricing.input)) /
     1_000_000
   );
 }
@@ -332,8 +332,8 @@ export function CostComparison() {
         <div className="chart" role="list" aria-label="モデル別料金">
           {results.map(({ model, cost }) => {
             const tooltipId = `rates-${model.id}`;
-            const hasCacheDiscount =
-              !("cacheDiscount" in model) || model.cacheDiscount !== false;
+            const cacheWritePrice = model.pricing.cacheWrite;
+            const cachedInputPrice = model.pricing.cacheRead;
 
             return (
             <article
@@ -361,16 +361,19 @@ export function CostComparison() {
                 <strong>通常単価 / 100万 tokens</strong>
                 <dl>
                   <div><dt>入力</dt><dd>{displayRate(model.pricing.input)}</dd></div>
+                  <div>
+                    <dt>Cached input</dt>
+                    <dd>
+                      {cachedInputPrice !== null
+                        ? displayRate(cachedInputPrice)
+                        : "—"}
+                    </dd>
+                  </div>
                   <div><dt>出力</dt><dd>{displayRate(model.pricing.output)}</dd></div>
-                  {hasCacheDiscount ? (
-                    <>
-                      <div><dt>キャッシュ書込</dt><dd>{displayRate(model.pricing.cacheWrite)}</dd></div>
-                      <div><dt>キャッシュ読込</dt><dd>{displayRate(model.pricing.cacheRead)}</dd></div>
-                    </>
-                  ) : (
-                    <div className="cache-unavailable">
-                      <dt>キャッシュ</dt>
-                      <dd>割引なし（入力単価で計算）</dd>
+                  {cacheWritePrice !== null && (
+                    <div>
+                      <dt>Cache write</dt>
+                      <dd>{displayRate(cacheWritePrice)}</dd>
                     </div>
                   )}
                 </dl>
@@ -397,8 +400,8 @@ export function CostComparison() {
                   <th>モデル</th>
                   <th>入力</th>
                   <th>出力</th>
-                  <th>書込</th>
-                  <th>読込</th>
+                  <th>Cache write</th>
+                  <th>Cached input</th>
                 </tr>
               </thead>
               <tbody>
@@ -407,14 +410,16 @@ export function CostComparison() {
                     <td>{model.name}</td>
                     <td>{displayRate(model.pricing.input)}</td>
                     <td>{displayRate(model.pricing.output)}</td>
-                    {"cacheDiscount" in model && model.cacheDiscount === false ? (
-                      <td colSpan={2}>割引なし</td>
-                    ) : (
-                      <>
-                        <td>{displayRate(model.pricing.cacheWrite)}</td>
-                        <td>{displayRate(model.pricing.cacheRead)}</td>
-                      </>
-                    )}
+                    <td>
+                      {model.pricing.cacheWrite === null
+                        ? "—"
+                        : displayRate(model.pricing.cacheWrite)}
+                    </td>
+                    <td>
+                      {model.pricing.cacheRead === null
+                        ? "—"
+                        : displayRate(model.pricing.cacheRead)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -63,8 +63,6 @@ h1 { margin:0; font-size:clamp(23px,3.4vw,34px); line-height:1.1; letter-spacing
 .rate-tooltip dl>div { display:flex; justify-content:space-between; gap:12px; }
 .rate-tooltip dt { color:var(--muted); font-size:10px; }
 .rate-tooltip dd { margin:0; color:var(--ink); font-family:var(--font-geist-mono); font-size:10px; font-variant-numeric:tabular-nums; }
-.rate-tooltip .cache-unavailable { display:block; padding-top:3px; border-top:1px solid var(--line); }
-.rate-tooltip .cache-unavailable dd { margin-top:3px; white-space:normal; }
 .empty-state { padding:32px; color:var(--muted); background:var(--soft); border-radius:8px; text-align:center; font-size:13px; }
 footer { padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:10px; }
 footer>p { margin:0 0 12px; }

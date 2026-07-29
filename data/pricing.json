@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-27",
+  "updatedAt": "2026-07-29",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -84,6 +84,18 @@
         "cacheRead": 1
       },
       "source": "https://claude.com/pricing#api"
+    },
+    {
+      "id": "claude-opus-5",
+      "provider": "Anthropic",
+      "name": "Claude Opus 5",
+      "pricing": {
+        "input": 5,
+        "output": 25,
+        "cacheWrite": 6.25,
+        "cacheRead": 0.5
+      },
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
     {
       "id": "claude-opus-4.8",

@@ -80,6 +80,31 @@ const checks = [
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4 nano"),
   },
   {
+    id: "claude-opus-5",
+    url: "https://platform.claude.com/docs/en/about-claude/pricing",
+    parse: (text) => {
+      const tableStart = text.indexOf(
+        "The following table shows pricing for all Claude models",
+      );
+      const start = text.indexOf("Claude Opus 5", tableStart);
+      const end = text.indexOf("Claude Opus 4.8", start);
+      if (tableStart < 0 || start < 0 || end < 0) {
+        throw new Error("Claude Opus 5 pricing row not found");
+      }
+      const segment = text.slice(start, end);
+      const values = [...segment.matchAll(/\$([\d.]+)\s*\/\s*MTok/gi)].map(
+        (match) => Number(match[1]),
+      );
+      if (values.length < 5) throw new Error("Claude Opus 5 prices not found");
+      return {
+        input: values[0],
+        cacheWrite: values[1],
+        cacheRead: values[3],
+        output: values[4],
+      };
+    },
+  },
+  {
     id: "claude-fable-5",
     url: "https://claude.com/pricing",
     parse: (text) => {

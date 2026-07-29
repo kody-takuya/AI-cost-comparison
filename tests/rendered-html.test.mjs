@@ -24,6 +24,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /GPT-5\.4 mini/);
   assert.match(html, /GPT-5\.4 nano/);
   assert.match(html, /DeepSeek V4 Pro/);
+  assert.match(html, /Claude Opus 5/);
   assert.match(html, /Claude Sonnet 5/);
   assert.match(html, /Gemini 3\.6 Flash/);
   assert.match(html, /Gemini 3\.5 Flash-Lite/);

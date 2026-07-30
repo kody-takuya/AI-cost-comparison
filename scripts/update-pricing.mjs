@@ -49,20 +49,38 @@ function parseOpenAITextRates(text, id, cacheDiscount = true) {
   return { input, output, cacheWrite: null, cacheRead: cachedInput };
 }
 
+function parseOpenAIPricingRow(text, modelId) {
+  const escapedId = modelId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = text.match(
+    new RegExp(
+      `${escapedId}\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)`,
+      "i",
+    ),
+  );
+  if (!match) throw new Error(`${modelId} prices not found`);
+  return {
+    input: Number(match[1]),
+    cacheRead: Number(match[2]),
+    cacheWrite: Number(match[3]),
+    output: Number(match[4]),
+  };
+}
+
 const checks = [
   {
     id: "gpt-5.6-sol",
-    url: "https://openai.com/index/gpt-5-6/",
-    parse: (text) => {
-      const match = text.match(/Sol is \$([\d.]+) input \/ \$([\d.]+) output/i);
-      if (!match) throw new Error("GPT-5.6 Sol prices not found");
-      const input = Number(match[1]);
-      const terra = text.match(/Terra is \$([\d.]+) input \/ \$([\d.]+) output/i);
-      const luna = text.match(/Luna is \$([\d.]+) input \/ \$([\d.]+) output/i);
-      if (terra) update("gpt-5.6-terra", { input: Number(terra[1]), output: Number(terra[2]), cacheWrite: Number(terra[1]) * 1.25, cacheRead: Number(terra[1]) * 0.1 });
-      if (luna) update("gpt-5.6-luna", { input: Number(luna[1]), output: Number(luna[2]), cacheWrite: Number(luna[1]) * 1.25, cacheRead: Number(luna[1]) * 0.1 });
-      return { input, output: Number(match[2]), cacheWrite: input * 1.25, cacheRead: input * 0.1 };
-    },
+    url: "https://developers.openai.com/api/docs/pricing",
+    parse: (text) => parseOpenAIPricingRow(text, "gpt-5.6-sol"),
+  },
+  {
+    id: "gpt-5.6-terra",
+    url: "https://developers.openai.com/api/docs/pricing",
+    parse: (text) => parseOpenAIPricingRow(text, "gpt-5.6-terra"),
+  },
+  {
+    id: "gpt-5.6-luna",
+    url: "https://developers.openai.com/api/docs/pricing",
+    parse: (text) => parseOpenAIPricingRow(text, "gpt-5.6-luna"),
   },
   {
     id: "gpt-5.4",

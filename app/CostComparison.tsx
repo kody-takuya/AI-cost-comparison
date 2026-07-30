@@ -143,7 +143,7 @@ function displayRate(value: number) {
 }
 
 export function CostComparison() {
-  const [mode, setMode] = useState<Mode>("task");
+  const [mode, setMode] = useState<Mode>("tokens");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [rateSortKey, setRateSortKey] = useState<RateSortKey>("input");
   const [rateSortDirection, setRateSortDirection] = useState<"asc" | "desc">(

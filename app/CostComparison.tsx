@@ -19,6 +19,8 @@ type UseCase = TokenProfile & {
 
 type Model = (typeof pricingData.models)[number];
 type TokenKey = keyof TokenProfile;
+type Mode = "task" | "monthly" | "tokens";
+type RateSortKey = "model" | "provider" | TokenKey;
 
 const defaultUseCases: UseCase[] = [
   {
@@ -141,8 +143,12 @@ function displayRate(value: number) {
 }
 
 export function CostComparison() {
-  const [mode, setMode] = useState<"task" | "monthly">("task");
+  const [mode, setMode] = useState<Mode>("task");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [rateSortKey, setRateSortKey] = useState<RateSortKey>("input");
+  const [rateSortDirection, setRateSortDirection] = useState<"asc" | "desc">(
+    "desc",
+  );
   const [useCases, setUseCases] = useState(defaultUseCases);
   const [activeUseCase, setActiveUseCase] = useState(defaultUseCases[0].id);
   const uniqueProviders = useMemo(
@@ -171,6 +177,30 @@ export function CostComparison() {
       );
   }, [mode, providers, selectedUseCase, sortDirection]);
 
+  const rateRows = useMemo(() => {
+    const direction = rateSortDirection === "asc" ? 1 : -1;
+
+    return pricingData.models
+      .filter((model) => providers[model.provider])
+      .sort((a, b) => {
+        if (rateSortKey === "model" || rateSortKey === "provider") {
+          const left = rateSortKey === "model" ? a.name : a.provider;
+          const right = rateSortKey === "model" ? b.name : b.provider;
+          return (
+            left.localeCompare(right, "ja", { numeric: true }) * direction ||
+            a.name.localeCompare(b.name, "ja", { numeric: true })
+          );
+        }
+
+        const left = a.pricing[rateSortKey];
+        const right = b.pricing[rateSortKey];
+        if (left === null && right === null) return a.name.localeCompare(b.name);
+        if (left === null) return 1;
+        if (right === null) return -1;
+        return (left - right) * direction || a.name.localeCompare(b.name);
+      });
+  }, [providers, rateSortDirection, rateSortKey]);
+
   const maxCost = Math.max(...results.map((result) => result.cost), 0.000001);
 
   function updateUseCase(key: TokenKey | "monthlyCount", value: number) {
@@ -185,6 +215,31 @@ export function CostComparison() {
 
   function toggleProvider(provider: string) {
     setProviders((current) => ({ ...current, [provider]: !current[provider] }));
+  }
+
+  function sortRates(key: RateSortKey) {
+    if (key === rateSortKey) {
+      setRateSortDirection((current) =>
+        current === "asc" ? "desc" : "asc",
+      );
+      return;
+    }
+    setRateSortKey(key);
+    setRateSortDirection(
+      key === "model" || key === "provider" ? "asc" : "desc",
+    );
+  }
+
+  function rateSortMarker(key: RateSortKey) {
+    if (key !== rateSortKey) return "↕";
+    return rateSortDirection === "asc" ? "↑" : "↓";
+  }
+
+  function ariaSort(key: RateSortKey) {
+    if (key !== rateSortKey) return "none" as const;
+    return rateSortDirection === "asc"
+      ? ("ascending" as const)
+      : ("descending" as const);
   }
 
   const allVisible = Object.values(providers).every(Boolean);
@@ -208,69 +263,78 @@ export function CostComparison() {
           >
             月額
           </button>
+          <button
+            type="button"
+            className={mode === "tokens" ? "active" : ""}
+            onClick={() => setMode("tokens")}
+          >
+            トークン単価
+          </button>
         </div>
       </header>
 
-      <section className="controls" aria-label="比較条件">
-        <div className="use-case-tabs" role="tablist" aria-label="ユースケース">
-          {useCases.map((useCase) => (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeUseCase === useCase.id}
-              className={activeUseCase === useCase.id ? "active" : ""}
-              key={useCase.id}
-              onClick={() => setActiveUseCase(useCase.id)}
-            >
-              {useCase.label}
-              {mode === "monthly" && <span>{useCase.monthlyCount}回</span>}
-            </button>
-          ))}
-        </div>
-
-        <div className="assumptions">
-          <div className="assumption-heading">
-            <div>
-              <h2>{selectedUseCase.label}</h2>
-              <p>{selectedUseCase.description}</p>
-            </div>
-            {mode === "monthly" && (
-              <label className="count-field">
-                <span>月間回数</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={selectedUseCase.monthlyCount}
-                  onChange={(event) =>
-                    updateUseCase("monthlyCount", Number(event.target.value))
-                  }
-                />
-                <b>回</b>
-              </label>
-            )}
+      {mode !== "tokens" && (
+        <section className="controls" aria-label="比較条件">
+          <div className="use-case-tabs" role="tablist" aria-label="ユースケース">
+            {useCases.map((useCase) => (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeUseCase === useCase.id}
+                className={activeUseCase === useCase.id ? "active" : ""}
+                key={useCase.id}
+                onClick={() => setActiveUseCase(useCase.id)}
+              >
+                {useCase.label}
+                {mode === "monthly" && <span>{useCase.monthlyCount}回</span>}
+              </button>
+            ))}
           </div>
-          <div className="token-grid">
-            {tokenFields.map((field) => (
-              <label key={field.key}>
-                <span>{field.label}</span>
-                <div>
+
+          <div className="assumptions">
+            <div className="assumption-heading">
+              <div>
+                <h2>{selectedUseCase.label}</h2>
+                <p>{selectedUseCase.description}</p>
+              </div>
+              {mode === "monthly" && (
+                <label className="count-field">
+                  <span>月間回数</span>
                   <input
                     type="number"
                     min="0"
-                    step="1000"
-                    value={selectedUseCase[field.key]}
+                    step="1"
+                    value={selectedUseCase.monthlyCount}
                     onChange={(event) =>
-                      updateUseCase(field.key, Number(event.target.value))
+                      updateUseCase("monthlyCount", Number(event.target.value))
                     }
                   />
-                  <b>tokens</b>
-                </div>
-              </label>
-            ))}
+                  <b>回</b>
+                </label>
+              )}
+            </div>
+            <div className="token-grid">
+              {tokenFields.map((field) => (
+                <label key={field.key}>
+                  <span>{field.label}</span>
+                  <div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value={selectedUseCase[field.key]}
+                      onChange={(event) =>
+                        updateUseCase(field.key, Number(event.target.value))
+                      }
+                    />
+                    <b>tokens</b>
+                  </div>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="provider-filter" aria-label="プロバイダー絞り込み">
         <div className="section-label">
@@ -302,112 +366,48 @@ export function CostComparison() {
         </div>
       </section>
 
-      <section className="chart-section" aria-labelledby="chart-title">
-        <div className="chart-heading">
-          <div>
-            <p>
-              {mode === "task"
-                ? selectedUseCase.label
-                : `${selectedUseCase.label} × 月${selectedUseCase.monthlyCount}回`}
-            </p>
-            <h2 id="chart-title">{mode === "task" ? "1タスクあたり" : "1か月あたり"}</h2>
+      {mode === "tokens" ? (
+        <section className="chart-section" aria-labelledby="rate-table-title">
+          <div className="chart-heading">
+            <div>
+              <p>USD・API標準料金</p>
+              <h2 id="rate-table-title">トークン単価</h2>
+            </div>
+            <span className="rate-unit">100万 tokensあたり</span>
           </div>
-          <div className="chart-options">
-            <span>USD・API標準料金</span>
-            <label>
-              <span className="sr-only">並び順</span>
-              <select
-                value={sortDirection}
-                onChange={(event) =>
-                  setSortDirection(event.target.value as "asc" | "desc")
-                }
-              >
-                <option value="asc">安い順</option>
-                <option value="desc">高い順</option>
-              </select>
-            </label>
-          </div>
-        </div>
 
-        <div className="chart" role="list" aria-label="モデル別料金">
-          {results.map(({ model, cost }) => {
-            const tooltipId = `rates-${model.id}`;
-            const cacheWritePrice = model.pricing.cacheWrite;
-            const cachedInputPrice = model.pricing.cacheRead;
-
-            return (
-            <article
-              className="bar-row"
-              role="listitem"
-              key={model.id}
-              tabIndex={0}
-              aria-describedby={tooltipId}
-            >
-              <div className="model-name">
-                <strong>{model.name}</strong>
-                <span>{model.provider}</span>
-              </div>
-              <div className="bar-track" aria-hidden="true">
-                <div
-                  className="bar-fill"
-                  style={{ width: `${Math.max((cost / maxCost) * 100, 1.5)}%` }}
-                />
-              </div>
-              <div className="cost-label">{displayCost(cost)}</div>
-              <a href={model.source} target="_blank" rel="noreferrer" aria-label={`${model.name}の公式料金ページ`}>
-                料金表
-              </a>
-              <div className="rate-tooltip" id={tooltipId} role="tooltip">
-                <strong>通常単価 / 100万 tokens</strong>
-                <dl>
-                  <div><dt>入力</dt><dd>{displayRate(model.pricing.input)}</dd></div>
-                  <div>
-                    <dt>Cached input</dt>
-                    <dd>
-                      {cachedInputPrice !== null
-                        ? displayRate(cachedInputPrice)
-                        : "—"}
-                    </dd>
-                  </div>
-                  <div><dt>出力</dt><dd>{displayRate(model.pricing.output)}</dd></div>
-                  {cacheWritePrice !== null && (
-                    <div>
-                      <dt>Cache write</dt>
-                      <dd>{displayRate(cacheWritePrice)}</dd>
-                    </div>
-                  )}
-                </dl>
-              </div>
-            </article>
-            );
-          })}
-          {results.length === 0 && (
-            <p className="empty-state">表示するプロバイダーを選んでください。</p>
-          )}
-        </div>
-      </section>
-
-      <footer>
-        <p>
-          Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
-        </p>
-        <details>
-          <summary>全モデルの通常単価を見る</summary>
-          <div className="rate-table-wrap">
-            <table>
+          <div className="rate-comparison-wrap">
+            <table className="rate-comparison-table">
               <thead>
                 <tr>
-                  <th>モデル</th>
-                  <th>入力</th>
-                  <th>出力</th>
-                  <th>Cache write</th>
-                  <th>Cached input</th>
+                  <th aria-sort={ariaSort("model")}>
+                    <button type="button" onClick={() => sortRates("model")}>
+                      モデル <span>{rateSortMarker("model")}</span>
+                    </button>
+                  </th>
+                  <th aria-sort={ariaSort("provider")}>
+                    <button type="button" onClick={() => sortRates("provider")}>
+                      プロバイダー <span>{rateSortMarker("provider")}</span>
+                    </button>
+                  </th>
+                  {tokenFields.map((field) => (
+                    <th key={field.key} aria-sort={ariaSort(field.key)}>
+                      <button
+                        type="button"
+                        onClick={() => sortRates(field.key)}
+                      >
+                        {field.label} <span>{rateSortMarker(field.key)}</span>
+                      </button>
+                    </th>
+                  ))}
+                  <th>参照</th>
                 </tr>
               </thead>
               <tbody>
-                {pricingData.models.map((model) => (
+                {rateRows.map((model) => (
                   <tr key={model.id}>
-                    <td>{model.name}</td>
+                    <td><strong>{model.name}</strong></td>
+                    <td>{model.provider}</td>
                     <td>{displayRate(model.pricing.input)}</td>
                     <td>{displayRate(model.pricing.output)}</td>
                     <td>
@@ -420,12 +420,153 @@ export function CostComparison() {
                         ? "—"
                         : displayRate(model.pricing.cacheRead)}
                     </td>
+                    <td>
+                      <a
+                        href={model.source}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`${model.name}の公式料金ページ`}
+                      >
+                        料金表
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {rateRows.length === 0 && (
+              <p className="empty-state">表示するプロバイダーを選んでください。</p>
+            )}
           </div>
-        </details>
+        </section>
+      ) : (
+        <section className="chart-section" aria-labelledby="chart-title">
+          <div className="chart-heading">
+            <div>
+              <p>
+                {mode === "task"
+                  ? selectedUseCase.label
+                  : `${selectedUseCase.label} × 月${selectedUseCase.monthlyCount}回`}
+              </p>
+              <h2 id="chart-title">{mode === "task" ? "1タスクあたり" : "1か月あたり"}</h2>
+            </div>
+            <div className="chart-options">
+              <span>USD・API標準料金</span>
+              <label>
+                <span className="sr-only">並び順</span>
+                <select
+                  value={sortDirection}
+                  onChange={(event) =>
+                    setSortDirection(event.target.value as "asc" | "desc")
+                  }
+                >
+                  <option value="asc">安い順</option>
+                  <option value="desc">高い順</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div className="chart" role="list" aria-label="モデル別料金">
+            {results.map(({ model, cost }) => {
+              const tooltipId = `rates-${model.id}`;
+              const cacheWritePrice = model.pricing.cacheWrite;
+              const cachedInputPrice = model.pricing.cacheRead;
+
+              return (
+              <article
+                className="bar-row"
+                role="listitem"
+                key={model.id}
+                tabIndex={0}
+                aria-describedby={tooltipId}
+              >
+                <div className="model-name">
+                  <strong>{model.name}</strong>
+                  <span>{model.provider}</span>
+                </div>
+                <div className="bar-track" aria-hidden="true">
+                  <div
+                    className="bar-fill"
+                    style={{ width: `${Math.max((cost / maxCost) * 100, 1.5)}%` }}
+                  />
+                </div>
+                <div className="cost-label">{displayCost(cost)}</div>
+                <a href={model.source} target="_blank" rel="noreferrer" aria-label={`${model.name}の公式料金ページ`}>
+                  料金表
+                </a>
+                <div className="rate-tooltip" id={tooltipId} role="tooltip">
+                  <strong>通常単価 / 100万 tokens</strong>
+                  <dl>
+                    <div><dt>入力</dt><dd>{displayRate(model.pricing.input)}</dd></div>
+                    <div>
+                      <dt>Cached input</dt>
+                      <dd>
+                        {cachedInputPrice !== null
+                          ? displayRate(cachedInputPrice)
+                          : "—"}
+                      </dd>
+                    </div>
+                    <div><dt>出力</dt><dd>{displayRate(model.pricing.output)}</dd></div>
+                    {cacheWritePrice !== null && (
+                      <div>
+                        <dt>Cache write</dt>
+                        <dd>{displayRate(cacheWritePrice)}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              </article>
+              );
+            })}
+            {results.length === 0 && (
+              <p className="empty-state">表示するプロバイダーを選んでください。</p>
+            )}
+          </div>
+        </section>
+      )}
+
+      <footer>
+        <p>
+          Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
+        </p>
+        {mode !== "tokens" && (
+          <details>
+            <summary>全モデルの通常単価を見る</summary>
+            <div className="rate-table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>モデル</th>
+                    <th>入力</th>
+                    <th>出力</th>
+                    <th>Cache write</th>
+                    <th>Cached input</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pricingData.models.map((model) => (
+                    <tr key={model.id}>
+                      <td>{model.name}</td>
+                      <td>{displayRate(model.pricing.input)}</td>
+                      <td>{displayRate(model.pricing.output)}</td>
+                      <td>
+                        {model.pricing.cacheWrite === null
+                          ? "—"
+                          : displayRate(model.pricing.cacheWrite)}
+                      </td>
+                      <td>
+                        {model.pricing.cacheRead === null
+                          ? "—"
+                          : displayRate(model.pricing.cacheRead)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        )}
       </footer>
     </main>
   );

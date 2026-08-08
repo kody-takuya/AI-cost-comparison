@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-07",
+  "updatedAt": "2026-08-08",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -390,10 +390,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.77804,
-        "output": 5.33412,
-        "cacheWrite": 2.22255,
-        "cacheRead": 0.177804
+        "input": 1.7784,
+        "output": 5.3352,
+        "cacheWrite": 2.223,
+        "cacheRead": 0.17784
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

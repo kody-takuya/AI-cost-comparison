@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-11",
+  "updatedAt": "2026-08-12",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -186,10 +186,10 @@
       "provider": "Google",
       "name": "Gemini 3.5 Flash-Lite",
       "pricing": {
-        "input": 0.3,
-        "output": 2.5,
-        "cacheWrite": 0.3,
-        "cacheRead": 0.03
+        "input": 0.0375,
+        "output": 0.4,
+        "cacheWrite": 0.0375,
+        "cacheRead": 0.4
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
@@ -390,10 +390,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.77924,
-        "output": 5.33772,
-        "cacheWrite": 2.22405,
-        "cacheRead": 0.177924
+        "input": 1.779,
+        "output": 5.337,
+        "cacheWrite": 2.22375,
+        "cacheRead": 0.1779
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

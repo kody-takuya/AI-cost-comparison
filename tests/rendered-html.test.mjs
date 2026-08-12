@@ -29,6 +29,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Gemini 3\.6 Flash/);
   assert.match(html, /Gemini 3\.5 Flash-Lite/);
   assert.match(html, /Kimi K3/);
+  assert.match(html, /Muse Spark 1\.2/);
   assert.match(html, /Last updated:/);
   assert.match(html, /タスク単価/);
   assert.match(html, /月額/);

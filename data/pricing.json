@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-12",
+  "updatedAt": "2026-08-13",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -240,6 +240,18 @@
         "cacheRead": 0.025
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "id": "muse-spark-1.2",
+      "provider": "Meta",
+      "name": "Muse Spark 1.2",
+      "pricing": {
+        "input": 1.25,
+        "output": 4.25,
+        "cacheWrite": 1.25,
+        "cacheRead": 0.15
+      },
+      "source": "https://developer.meta.com/ai/resources/blog/build-with-muse-code/"
     },
     {
       "id": "muse-spark-1.1",

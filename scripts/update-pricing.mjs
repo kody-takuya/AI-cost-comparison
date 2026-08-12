@@ -325,13 +325,17 @@ for (const check of checks) {
   }
 }
 
-// Meta's public announcement is checked for model availability. Its developer
-// portal currently rate-limits automated requests, so the known rate is retained.
+// Meta's public announcement is checked for model availability. Its pricing
+// portal requires authentication, so the verified standard rate is retained.
 try {
-  const metaText = await getText("https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/");
-  if (!metaText.includes("Muse Spark 1.1")) throw new Error("model marker missing");
+  const metaText = await getText(
+    "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2",
+  );
+  if (!metaText.includes("Muse Spark 1.2")) {
+    throw new Error("model marker missing");
+  }
   succeeded += 1;
-  console.log("Checked muse-spark-1.1 availability");
+  console.log("Checked muse-spark-1.2 availability");
 } catch (error) {
   console.warn(`Meta availability check failed: ${error.message}`);
 }

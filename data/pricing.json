@@ -186,10 +186,10 @@
       "provider": "Google",
       "name": "Gemini 3.5 Flash-Lite",
       "pricing": {
-        "input": 0.0375,
-        "output": 0.4,
-        "cacheWrite": 0.0375,
-        "cacheRead": 0.4
+        "input": 0.3,
+        "output": 2.5,
+        "cacheWrite": 0.3,
+        "cacheRead": 0.03
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
@@ -402,10 +402,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.779,
-        "output": 5.337,
-        "cacheWrite": 2.22375,
-        "cacheRead": 0.1779
+        "input": 1.7796,
+        "output": 5.3388,
+        "cacheWrite": 2.2245,
+        "cacheRead": 0.17796
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

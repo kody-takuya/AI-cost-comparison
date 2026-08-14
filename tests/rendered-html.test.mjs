@@ -28,6 +28,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用/);
   assert.match(html, /Claude Opus 5/);
   assert.match(html, /Claude Sonnet 5/);
+  assert.match(html, /Gemini 3\.7 Flash/);
   assert.match(html, /Gemini 3\.6 Flash/);
   assert.match(html, /Gemini 3\.5 Flash-Lite/);
   assert.match(html, /Kimi K3/);

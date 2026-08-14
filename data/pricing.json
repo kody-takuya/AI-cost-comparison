@@ -171,14 +171,26 @@
       "source": "https://docs.x.ai/developers/pricing"
     },
     {
+      "id": "gemini-3.7-flash",
+      "provider": "Google",
+      "name": "Gemini 3.7 Flash",
+      "pricing": {
+        "input": 0.75,
+        "output": 3.75,
+        "cacheWrite": 0.75,
+        "cacheRead": 0.075
+      },
+      "source": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
       "id": "gemini-3.6-flash",
       "provider": "Google",
       "name": "Gemini 3.6 Flash",
       "pricing": {
-        "input": 1.5,
-        "output": 7.5,
-        "cacheWrite": 1.5,
-        "cacheRead": 0.15
+        "input": 0.75,
+        "output": 3.75,
+        "cacheWrite": 0.75,
+        "cacheRead": 0.075
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },

@@ -530,6 +530,7 @@ export function CostComparison() {
         <p>
           Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
         </p>
+        <p>{pricingData.notice}</p>
         {mode !== "tokens" && (
           <details>
             <summary>全モデルの通常単価を見る</summary>

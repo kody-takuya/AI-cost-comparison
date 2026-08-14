@@ -23,7 +23,9 @@ test("renders the LLM cost comparison", async () => {
   assert.doesNotMatch(html, /GPT-5\.4 Pro/);
   assert.match(html, /GPT-5\.4 mini/);
   assert.match(html, /GPT-5\.4 nano/);
-  assert.match(html, /DeepSeek V4 Pro/);
+  assert.match(html, /DeepSeek V4 Pro 0813 \(Off-peak\)/);
+  assert.match(html, /DeepSeek V4 Pro 0813 \(Peak\)/);
+  assert.match(html, /DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用/);
   assert.match(html, /Claude Opus 5/);
   assert.match(html, /Claude Sonnet 5/);
   assert.match(html, /Gemini 3\.6 Flash/);

@@ -283,17 +283,42 @@ const checks = [
     },
   },
   {
-    id: "deepseek-v4-pro",
+    id: "deepseek-v4-pro-off-peak",
     url: "https://api-docs.deepseek.com/quick_start/pricing",
     parse: (text) => {
-      const segment = text.slice(text.indexOf("deepseek-v4-flash"), text.indexOf("Deduction Rules"));
-      const rows = [...segment.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
-      if (rows.length < 6) throw new Error("DeepSeek V4 Pro prices not found");
-      const cacheRead = rows[1];
-      const input = rows[3];
-      const output = rows[5];
-      update("deepseek-v4-flash", { cacheRead: rows[0], input: rows[2], cacheWrite: rows[2], output: rows[4] });
-      return { input, output, cacheWrite: input, cacheRead };
+      const scheduledStart = text.indexOf("DeepSeek API pricing will be updated");
+      const segment = text.slice(scheduledStart, text.indexOf("Deduction Rules", scheduledStart));
+      const parseTiers = (modelId) => {
+        const match = segment.match(
+          new RegExp(
+            `${modelId}\\s*OFF-PEAK\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*PEAK\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)`,
+            "i",
+          ),
+        );
+        if (!match) throw new Error(`${modelId} time-of-day prices not found`);
+        return {
+          offPeak: {
+            cacheRead: Number(match[1]),
+            input: Number(match[2]),
+            cacheWrite: Number(match[2]),
+            output: Number(match[3]),
+          },
+          peak: {
+            cacheRead: Number(match[4]),
+            input: Number(match[5]),
+            cacheWrite: Number(match[5]),
+            output: Number(match[6]),
+          },
+        };
+      };
+
+      if (scheduledStart < 0) throw new Error("DeepSeek pricing adjustment not found");
+      const flash = parseTiers("deepseek-v4-flash");
+      const pro = parseTiers("deepseek-v4-pro");
+      update("deepseek-v4-pro-peak", pro.peak);
+      update("deepseek-v4-flash-off-peak", flash.offPeak);
+      update("deepseek-v4-flash-peak", flash.peak);
+      return pro.offPeak;
     },
   },
   {

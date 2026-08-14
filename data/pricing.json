@@ -1,5 +1,6 @@
 {
-  "updatedAt": "2026-08-13",
+  "updatedAt": "2026-08-14",
+  "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -374,26 +375,50 @@
       "source": "https://docs.z.ai/guides/overview/pricing"
     },
     {
-      "id": "deepseek-v4-pro",
+      "id": "deepseek-v4-pro-off-peak",
       "provider": "DeepSeek",
-      "name": "DeepSeek V4 Pro",
+      "name": "DeepSeek V4 Pro 0813 (Off-peak)",
       "pricing": {
-        "input": 0.435,
-        "output": 0.87,
-        "cacheWrite": 0.435,
-        "cacheRead": 0.003625
+        "input": 0.66,
+        "output": 1.98,
+        "cacheWrite": 0.66,
+        "cacheRead": 0.022
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing"
     },
     {
-      "id": "deepseek-v4-flash",
+      "id": "deepseek-v4-pro-peak",
       "provider": "DeepSeek",
-      "name": "DeepSeek V4 Flash",
+      "name": "DeepSeek V4 Pro 0813 (Peak)",
       "pricing": {
-        "input": 0.14,
-        "output": 0.28,
-        "cacheWrite": 0.14,
-        "cacheRead": 0.0028
+        "input": 1.32,
+        "output": 3.96,
+        "cacheWrite": 1.32,
+        "cacheRead": 0.044
+      },
+      "source": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+      "id": "deepseek-v4-flash-off-peak",
+      "provider": "DeepSeek",
+      "name": "DeepSeek V4 Flash 0731 (Off-peak)",
+      "pricing": {
+        "input": 0.22,
+        "output": 0.66,
+        "cacheWrite": 0.22,
+        "cacheRead": 0.007
+      },
+      "source": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+      "id": "deepseek-v4-flash-peak",
+      "provider": "DeepSeek",
+      "name": "DeepSeek V4 Flash 0731 (Peak)",
+      "pricing": {
+        "input": 0.44,
+        "output": 1.32,
+        "cacheWrite": 0.44,
+        "cacheRead": 0.014
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing"
     },

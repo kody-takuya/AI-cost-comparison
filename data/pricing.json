@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21",
+  "updatedAt": "2026-08-22",
   "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。",
   "models": [
     {
@@ -7,10 +7,10 @@
       "provider": "OpenAI",
       "name": "GPT-5.6 Sol",
       "pricing": {
-        "input": 5,
-        "output": 30,
-        "cacheWrite": 6.25,
-        "cacheRead": 0.5
+        "input": 4,
+        "output": 20,
+        "cacheWrite": 5,
+        "cacheRead": 0.4
       },
       "source": "https://developers.openai.com/api/docs/pricing"
     },
@@ -439,10 +439,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78476,
-        "output": 5.35428,
-        "cacheWrite": 2.23095,
-        "cacheRead": 0.178476
+        "input": 1.7856,
+        "output": 5.3568,
+        "cacheWrite": 2.232,
+        "cacheRead": 0.17856
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

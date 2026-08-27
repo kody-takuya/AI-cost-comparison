@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-26",
+  "updatedAt": "2026-08-27",
   "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。",
   "models": [
     {
@@ -439,10 +439,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78572,
-        "output": 5.35716,
-        "cacheWrite": 2.23215,
-        "cacheRead": 0.178572
+        "input": 1.7856,
+        "output": 5.3568,
+        "cacheWrite": 2.232,
+        "cacheRead": 0.17856
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

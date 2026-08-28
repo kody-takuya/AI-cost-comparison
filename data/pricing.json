@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-27",
-  "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。",
+  "updatedAt": "2026-08-28",
+  "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。GLM-5.3 Flashは2026-09-10 01:00 JSTまでの期間限定価格です。",
   "models": [
     {
       "id": "gpt-5.6-sol",
@@ -12,7 +12,7 @@
         "cacheWrite": 5,
         "cacheRead": 0.4
       },
-      "source": "https://developers.openai.com/api/docs/pricing"
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
     },
     {
       "id": "gpt-5.6-terra",
@@ -339,6 +339,30 @@
       "source": "https://platform.kimi.ai/docs/pricing/chat-k26"
     },
     {
+      "id": "glm-5.3",
+      "provider": "Z.AI",
+      "name": "GLM-5.3",
+      "pricing": {
+        "input": 1.4,
+        "output": 4.4,
+        "cacheWrite": 1.4,
+        "cacheRead": 0.26
+      },
+      "source": "https://docs.z.ai/guides/overview/pricing"
+    },
+    {
+      "id": "glm-5.3-flash",
+      "provider": "Z.AI",
+      "name": "GLM-5.3 Flash",
+      "pricing": {
+        "input": 0.075,
+        "output": 0.25,
+        "cacheWrite": 0.075,
+        "cacheRead": 0.015
+      },
+      "source": "https://docs.z.ai/guides/overview/pricing"
+    },
+    {
       "id": "glm-5.2",
       "provider": "Z.AI",
       "name": "GLM-5.2",
@@ -433,6 +457,30 @@
         "cacheRead": 0.014
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+      "id": "qwen3.8-max",
+      "provider": "Alibaba",
+      "name": "Qwen3.8 Max",
+      "pricing": {
+        "input": 1.7856,
+        "output": 5.3568,
+        "cacheWrite": 2.232,
+        "cacheRead": 0.1488
+      },
+      "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
+    },
+    {
+      "id": "qwen3.8-flash",
+      "provider": "Alibaba",
+      "name": "Qwen3.8 Flash",
+      "pricing": {
+        "input": 0.11904,
+        "output": 0.40176,
+        "cacheWrite": 0.186,
+        "cacheRead": 0.01488
+      },
+      "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
     {
       "id": "qwen3.7-max",

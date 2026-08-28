@@ -33,6 +33,11 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Gemini 3\.5 Flash-Lite/);
   assert.match(html, /Kimi K3/);
   assert.match(html, /Muse Spark 1\.2/);
+  assert.match(html, /Qwen3\.8 Max/);
+  assert.match(html, /Qwen3\.8 Flash/);
+  assert.match(html, /GLM-5\.3/);
+  assert.match(html, /GLM-5\.3 Flash/);
+  assert.match(html, /GLM-5\.3 Flashは2026-09-10 01:00 JSTまでの期間限定価格/);
   assert.match(html, /Last updated:/);
   assert.match(html, /タスク単価/);
   assert.match(html, /月額/);

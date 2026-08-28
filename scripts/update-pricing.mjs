@@ -66,6 +66,43 @@ function parseOpenAIPricingRow(text, modelId) {
   };
 }
 
+let cnyUsdRatePromise;
+async function getCnyUsdRate() {
+  cnyUsdRatePromise ??= fetch(
+    "https://api.frankfurter.dev/v1/latest?base=CNY&symbols=USD",
+  )
+    .then((response) => {
+      if (!response.ok) throw new Error(`CNY/USD rate: ${response.status}`);
+      return response.json();
+    })
+    .then((exchange) => Number(exchange?.rates?.USD));
+  const rate = await cnyUsdRatePromise;
+  if (!rate) throw new Error("CNY/USD rate not found");
+  return rate;
+}
+
+function qwenChinaRates(text, modelName) {
+  const lowerText = text.toLowerCase();
+  const modelStart = lowerText.indexOf(modelName.toLowerCase());
+  const billingStart = lowerText.indexOf("billing item", modelStart);
+  const singaporeStart = lowerText.indexOf("singapore", billingStart);
+  if (modelStart < 0 || billingStart < 0 || singaporeStart < 0) {
+    throw new Error(`${modelName} China pricing section not found`);
+  }
+  const segment = text.slice(billingStart, singaporeStart);
+  const find = (pattern, label) => {
+    const value = Number(segment.match(pattern)?.[1]);
+    if (!value) throw new Error(`${modelName} ${label} price not found`);
+    return value;
+  };
+  return {
+    input: find(/(?:^|\s)Input\s+([\d.]+)\s+Per/i, "input"),
+    output: find(/(?:^|\s)Output\s+([\d.]+)\s+Per/i, "output"),
+    cacheWrite: find(/Explicit Cache Creation\s+([\d.]+)/i, "cache creation"),
+    cacheRead: find(/Explicit Cache (?:Read|Hit)\s+([\d.]+)/i, "cache read"),
+  };
+}
+
 function parseIntroductoryGeminiFlashRates(segment, id) {
   const standard = segment.slice(0, segment.indexOf("Batch"));
   const rowPrices = (startLabel, endLabel) => {
@@ -96,8 +133,11 @@ function parseIntroductoryGeminiFlashRates(segment, id) {
 const checks = [
   {
     id: "gpt-5.6-sol",
-    url: "https://developers.openai.com/api/docs/pricing",
-    parse: (text) => parseOpenAIPricingRow(text, "gpt-5.6-sol"),
+    url: "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+    parse: (text) => {
+      const pricing = parseOpenAITextRates(text, "GPT-5.6 Sol");
+      return { ...pricing, cacheWrite: pricing.input * 1.25 };
+    },
   },
   {
     id: "gpt-5.6-terra",
@@ -306,6 +346,33 @@ const checks = [
     },
   },
   {
+    id: "glm-5.3",
+    url: "https://docs.z.ai/guides/overview/pricing",
+    parse: (text) => {
+      const match = text.match(
+        /GLM-5\.3\s+\$([\d.]+)\s+\$([\d.]+)\s+Limited-time Free\s+\$([\d.]+)/,
+      );
+      if (!match) throw new Error("GLM-5.3 prices not found");
+      const input = Number(match[1]);
+      return { input, cacheRead: Number(match[2]), cacheWrite: input, output: Number(match[3]) };
+    },
+  },
+  {
+    id: "glm-5.3-flash",
+    url: "https://docs.z.ai/guides/overview/pricing",
+    parse: (text) => {
+      const match = text.match(
+        /GLM-5\.3-Flash\s+\$([\d.]+)\s+\$([\d.]+)\s+\$([\d.]+)\s+\$([\d.]+)\s+Limited-time Free\s+\$([\d.]+)\s+\$([\d.]+)/,
+      );
+      if (!match) throw new Error("GLM-5.3 Flash prices not found");
+      const promoActive = Date.now() < Date.parse("2026-09-09T16:00:00Z");
+      const input = Number(promoActive ? match[2] : match[1]);
+      const cacheRead = Number(promoActive ? match[4] : match[3]);
+      const output = Number(promoActive ? match[6] : match[5]);
+      return { input, cacheRead, cacheWrite: input, output };
+    },
+  },
+  {
     id: "glm-5.2",
     url: "https://docs.z.ai/guides/overview/pricing",
     parse: (text) => {
@@ -355,15 +422,41 @@ const checks = [
     },
   },
   {
+    id: "qwen3.8-max",
+    url: "https://help.aliyun.com/en/model-studio/qwen3-8-max",
+    parse: async (text) => {
+      const cny = qwenChinaRates(text, "qwen3.8-max");
+      const rate = await getCnyUsdRate();
+      return {
+        input: cny.input * rate,
+        output: cny.output * rate,
+        cacheWrite: cny.cacheWrite * rate,
+        cacheRead: cny.cacheRead * rate,
+      };
+    },
+  },
+  {
+    id: "qwen3.8-flash",
+    url: "https://help.aliyun.com/en/model-studio/qwen3-8-flash",
+    parse: async (text) => {
+      const cny = qwenChinaRates(text, "qwen3.8-flash");
+      const rate = await getCnyUsdRate();
+      return {
+        input: cny.input * rate,
+        output: cny.output * rate,
+        cacheWrite: cny.cacheWrite * rate,
+        cacheRead: cny.cacheRead * rate,
+      };
+    },
+  },
+  {
     id: "qwen3.7-max",
     url: "https://help.aliyun.com/en/model-studio/model-pricing",
     parse: async (text) => {
       const segment = text.slice(text.indexOf("qwen3.7-max"), text.indexOf("qwen3.7-max-2026-06-08"));
       const cny = [...segment.matchAll(/CNY\s*([\d.]+)/gi)].map((match) => Number(match[1]));
       if (cny.length < 2) throw new Error("Qwen3.7 Max prices not found");
-      const exchange = await fetch("https://api.frankfurter.dev/v1/latest?base=CNY&symbols=USD").then((response) => response.json());
-      const rate = Number(exchange?.rates?.USD);
-      if (!rate) throw new Error("CNY/USD rate not found");
+      const rate = await getCnyUsdRate();
       const input = cny[0] * rate;
       const output = cny[1] * rate;
       return { input, output, cacheWrite: input * 1.25, cacheRead: input * 0.1 };

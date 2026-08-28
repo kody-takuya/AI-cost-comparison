@@ -367,10 +367,10 @@
       "provider": "Z.AI",
       "name": "GLM-5.2",
       "pricing": {
-        "input": 1.4,
+        "input": 0.15,
         "output": 4.4,
-        "cacheWrite": 1.4,
-        "cacheRead": 0.26
+        "cacheWrite": 0.15,
+        "cacheRead": 0.075
       },
       "source": "https://docs.z.ai/guides/overview/pricing"
     },
@@ -463,10 +463,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.7856,
-        "output": 5.3568,
-        "cacheWrite": 2.232,
-        "cacheRead": 0.1488
+        "input": 1.78548,
+        "output": 5.35644,
+        "cacheWrite": 2.23185,
+        "cacheRead": 0.14879
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -475,10 +475,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.11904,
-        "output": 0.40176,
-        "cacheWrite": 0.186,
-        "cacheRead": 0.01488
+        "input": 0.119032,
+        "output": 0.401733,
+        "cacheWrite": 0.185988,
+        "cacheRead": 0.014879
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -487,10 +487,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.7856,
-        "output": 5.3568,
-        "cacheWrite": 2.232,
-        "cacheRead": 0.17856
+        "input": 1.78548,
+        "output": 5.35644,
+        "cacheWrite": 2.23185,
+        "cacheRead": 0.178548
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-02",
   "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。GLM-5.3 Flashは2026-09-10 01:00 JSTまでの期間限定価格です。",
   "models": [
     {
@@ -73,6 +73,18 @@
         "cacheRead": 0.02
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-5.4-nano"
+    },
+    {
+      "id": "claude-fable-5.1",
+      "provider": "Anthropic",
+      "name": "Claude Fable 5.1",
+      "pricing": {
+        "input": 10,
+        "output": 50,
+        "cacheWrite": 12.5,
+        "cacheRead": 0.25
+      },
+      "source": "https://platform.claude.com/docs/en/models/fable-5-1/overview"
     },
     {
       "id": "claude-fable-5",
@@ -463,10 +475,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.78584,
-        "output": 5.35752,
-        "cacheWrite": 2.2323,
-        "cacheRead": 0.14882
+        "input": 1.78512,
+        "output": 5.35536,
+        "cacheWrite": 2.2314,
+        "cacheRead": 0.14876
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -475,10 +487,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119056,
-        "output": 0.401814,
-        "cacheWrite": 0.186025,
-        "cacheRead": 0.014882
+        "input": 0.119008,
+        "output": 0.401652,
+        "cacheWrite": 0.18595,
+        "cacheRead": 0.014876
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -487,10 +499,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78584,
-        "output": 5.35752,
-        "cacheWrite": 2.2323,
-        "cacheRead": 0.178584
+        "input": 1.78512,
+        "output": 5.35536,
+        "cacheWrite": 2.2314,
+        "cacheRead": 0.178512
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

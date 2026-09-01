@@ -66,6 +66,35 @@ function parseOpenAIPricingRow(text, modelId) {
   };
 }
 
+function parseAnthropicPricingRow(text, modelName, nextModelName) {
+  const tableStart = text.indexOf(
+    "The following table shows pricing for all Claude models",
+  );
+  const pricingTable = text.slice(tableStart);
+  const rowStart = (name) => {
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return pricingTable.search(
+      new RegExp(`${escapedName}(?![\\d.])[^$]{0,100}\\$`, "i"),
+    );
+  };
+  const start = rowStart(modelName);
+  const nextStart = rowStart(nextModelName);
+  const end = nextStart < 0 ? -1 : nextStart;
+  if (tableStart < 0 || start < 0 || end < 0) {
+    throw new Error(`${modelName} pricing row not found`);
+  }
+  const values = [...pricingTable.slice(start, end).matchAll(/\$([\d.]+)\s*\/\s*MTok/gi)].map(
+    (match) => Number(match[1]),
+  );
+  if (values.length < 5) throw new Error(`${modelName} prices not found`);
+  return {
+    input: values[0],
+    cacheWrite: values[1],
+    cacheRead: values[3],
+    output: values[4],
+  };
+}
+
 let cnyUsdRatePromise;
 async function getCnyUsdRate() {
   cnyUsdRatePromise ??= fetch(
@@ -165,6 +194,12 @@ const checks = [
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4 nano"),
   },
   {
+    id: "claude-fable-5.1",
+    url: "https://platform.claude.com/docs/en/about-claude/pricing",
+    parse: (text) =>
+      parseAnthropicPricingRow(text, "Claude Fable 5.1", "Claude Mythos 5.1"),
+  },
+  {
     id: "claude-opus-5",
     url: "https://platform.claude.com/docs/en/about-claude/pricing",
     parse: (text) => {
@@ -191,13 +226,9 @@ const checks = [
   },
   {
     id: "claude-fable-5",
-    url: "https://claude.com/pricing",
-    parse: (text) => {
-      const segment = text.slice(text.indexOf("Fable 5"), text.indexOf("Opus 4.8"));
-      const values = [...segment.matchAll(/\$([\d.]+)\s*\/\s*MTok/gi)].map((match) => Number(match[1]));
-      if (values.length < 4) throw new Error("Fable 5 prices not found");
-      return { input: values[0], output: values[1], cacheWrite: values[2], cacheRead: values[3] };
-    },
+    url: "https://platform.claude.com/docs/en/about-claude/pricing",
+    parse: (text) =>
+      parseAnthropicPricingRow(text, "Claude Fable 5", "Claude Mythos 5"),
   },
   {
     id: "grok-4.5",
@@ -496,6 +527,8 @@ if (succeeded === 0) throw new Error("No official pricing source could be read")
 const previous = await readFile(dataPath, "utf8");
 const previousData = JSON.parse(previous);
 const pricesChanged = JSON.stringify(previousData.models) !== JSON.stringify(data.models);
-if (pricesChanged) data.updatedAt = new Date().toISOString().slice(0, 10);
+if (pricesChanged) {
+  data.updatedAt = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
 await writeFile(dataPath, `${JSON.stringify(data, null, 2)}\n`);
 console.log(pricesChanged ? "Pricing data changed." : "Pricing data is current.");

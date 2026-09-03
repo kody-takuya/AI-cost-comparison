@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-02",
+  "updatedAt": "2026-09-03",
   "notice": "DeepSeekの時間帯別料金は2026-08-17 01:00 JSTから適用。ピークは10:00–13:00、15:00–19:00 JSTで、それ以外はオフピークです。GLM-5.3 Flashは2026-09-10 01:00 JSTまでの期間限定価格です。",
   "models": [
     {
@@ -475,10 +475,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.78512,
-        "output": 5.35536,
-        "cacheWrite": 2.2314,
-        "cacheRead": 0.14876
+        "input": 1.78536,
+        "output": 5.35608,
+        "cacheWrite": 2.2317,
+        "cacheRead": 0.14878
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -487,10 +487,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119008,
-        "output": 0.401652,
-        "cacheWrite": 0.18595,
-        "cacheRead": 0.014876
+        "input": 0.119024,
+        "output": 0.401706,
+        "cacheWrite": 0.185975,
+        "cacheRead": 0.014878
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -499,10 +499,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78512,
-        "output": 5.35536,
-        "cacheWrite": 2.2314,
-        "cacheRead": 0.178512
+        "input": 1.78536,
+        "output": 5.35608,
+        "cacheWrite": 2.2317,
+        "cacheRead": 0.178536
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

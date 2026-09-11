@@ -37,16 +37,17 @@ function update(id, nextPricing) {
 
 function parseOpenAITextRates(text, id, cacheDiscount = true) {
   const match = text.match(
-    /Text tokens\s*Per 1M tokens[\s\S]{0,240}?Input\s*\$([\d.]+)(?:\s*Cached input\s*\$([\d.]+))?\s*Output\s*\$([\d.]+)/i,
+    /Text tokens\s*Per 1M tokens[\s\S]{0,240}?Input\s*\$([\d.]+)(?:\s*Cached input\s*\$([\d.]+))?(?:\s*Cache writes\s*\$([\d.]+))?\s*Output\s*\$([\d.]+)/i,
   );
   if (!match) throw new Error(`${id} prices not found`);
   const input = Number(match[1]);
   const cachedInput = cacheDiscount ? Number(match[2]) : null;
-  const output = Number(match[3]);
+  const cacheWrite = match[3] ? Number(match[3]) : null;
+  const output = Number(match[4]);
   if (!input || (cacheDiscount && !cachedInput) || !output) {
     throw new Error(`${id} prices are invalid`);
   }
-  return { input, output, cacheWrite: null, cacheRead: cachedInput };
+  return { input, output, cacheWrite, cacheRead: cachedInput };
 }
 
 function parseOpenAIPricingRow(text, modelId) {
@@ -160,6 +161,14 @@ function parseIntroductoryGeminiFlashRates(segment, id) {
 }
 
 const checks = [
+  {
+    id: "gpt-6-astra",
+    url: "https://developers.openai.com/api/docs/models/gpt-6-astra",
+    parse: (text) => {
+      const pricing = parseOpenAITextRates(text, "GPT-6 Astra");
+      return { ...pricing, cacheWrite: pricing.input * 1.25 };
+    },
+  },
   {
     id: "gpt-5.6-sol",
     url: "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
@@ -414,42 +423,49 @@ const checks = [
     },
   },
   {
-    id: "deepseek-v4-pro-off-peak",
+    id: "deepseek-v4.1-flash-off-peak",
     url: "https://api-docs.deepseek.com/quick_start/pricing",
     parse: (text) => {
-      const scheduledStart = text.indexOf("DeepSeek API pricing will be updated");
-      const segment = text.slice(scheduledStart, text.indexOf("Deduction Rules", scheduledStart));
-      const parseTiers = (modelId) => {
-        const match = segment.match(
-          new RegExp(
-            `${modelId}\\s*OFF-PEAK\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*PEAK\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)`,
-            "i",
-          ),
+      const tableStart = text.indexOf("MODEL deepseek-flash");
+      const tableEnd = text.indexOf("Deduction Rules", tableStart);
+      const segment = text.slice(tableStart, tableEnd);
+      const parseRatePair = (label, nextLabel) => {
+        const start = segment.indexOf(label);
+        const end = nextLabel ? segment.indexOf(nextLabel, start) : segment.length;
+        const prices = [...segment.slice(start, end).matchAll(/\$([\d.]+)/g)].map(
+          (match) => Number(match[1]),
         );
-        if (!match) throw new Error(`${modelId} time-of-day prices not found`);
+        if (start < 0 || prices.length < 4) {
+          throw new Error(`DeepSeek ${label} prices not found`);
+        }
         return {
-          offPeak: {
-            cacheRead: Number(match[1]),
-            input: Number(match[2]),
-            cacheWrite: Number(match[2]),
-            output: Number(match[3]),
-          },
-          peak: {
-            cacheRead: Number(match[4]),
-            input: Number(match[5]),
-            cacheWrite: Number(match[5]),
-            output: Number(match[6]),
-          },
+          offPeak: { flash: prices[0], pro: prices[1] },
+          peak: { flash: prices[2], pro: prices[3] },
         };
       };
-
-      if (scheduledStart < 0) throw new Error("DeepSeek pricing adjustment not found");
-      const flash = parseTiers("deepseek-v4-flash");
-      const pro = parseTiers("deepseek-v4-pro");
-      update("deepseek-v4-pro-peak", pro.peak);
-      update("deepseek-v4-flash-off-peak", flash.offPeak);
-      update("deepseek-v4-flash-peak", flash.peak);
-      return pro.offPeak;
+      if (tableStart < 0 || tableEnd < 0) throw new Error("DeepSeek pricing table not found");
+      const hit = parseRatePair("1M INPUT TOKENS (CACHE HIT)", "1M INPUT TOKENS (CACHE MISS)");
+      const miss = parseRatePair("1M INPUT TOKENS (CACHE MISS)", "1M OUTPUT TOKENS");
+      const output = parseRatePair("1M OUTPUT TOKENS");
+      const tier = (period, model) => ({
+        cacheRead: hit[period][model],
+        input: miss[period][model],
+        cacheWrite: miss[period][model],
+        output: output[period][model],
+      });
+      const flashOffPeak = tier("offPeak", "flash");
+      const flashPeak = tier("peak", "flash");
+      const proRoutesToFlash = Date.now() >= Date.parse("2026-09-14T04:00:00Z");
+      update("deepseek-v4.1-flash-peak", flashPeak);
+      update(
+        "deepseek-v4-pro-off-peak",
+        proRoutesToFlash ? flashOffPeak : tier("offPeak", "pro"),
+      );
+      update(
+        "deepseek-v4-pro-peak",
+        proRoutesToFlash ? flashPeak : tier("peak", "pro"),
+      );
+      return flashOffPeak;
     },
   },
   {

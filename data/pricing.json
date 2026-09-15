@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-12",
+  "updatedAt": "2026-09-15",
   "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。",
   "models": [
     {
@@ -259,10 +259,10 @@
       "provider": "Google",
       "name": "Gemini 3 Flash",
       "pricing": {
-        "input": 0.5,
-        "output": 3,
-        "cacheWrite": 0.5,
-        "cacheRead": 0.05
+        "input": 0.05,
+        "output": 0.01,
+        "cacheWrite": 0.05,
+        "cacheRead": 0.01
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
@@ -439,10 +439,10 @@
       "provider": "DeepSeek",
       "name": "DeepSeek V4 Pro 0813 (Off-peak)",
       "pricing": {
-        "input": 0.66,
-        "output": 1.98,
-        "cacheWrite": 0.66,
-        "cacheRead": 0.022
+        "input": 0.15,
+        "output": 0.6,
+        "cacheWrite": 0.15,
+        "cacheRead": 0.003
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing"
     },
@@ -451,10 +451,10 @@
       "provider": "DeepSeek",
       "name": "DeepSeek V4 Pro 0813 (Peak)",
       "pricing": {
-        "input": 1.32,
-        "output": 3.96,
-        "cacheWrite": 1.32,
-        "cacheRead": 0.044
+        "input": 0.3,
+        "output": 1.2,
+        "cacheWrite": 0.3,
+        "cacheRead": 0.006
       },
       "source": "https://api-docs.deepseek.com/quick_start/pricing"
     },

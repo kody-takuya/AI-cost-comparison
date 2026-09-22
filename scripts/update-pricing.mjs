@@ -73,9 +73,13 @@ function parseAnthropicPricingRow(text, modelName, nextModelName) {
   );
   const pricingTable = text.slice(tableStart);
   const rowStart = (name) => {
-    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapedName = name
+      .split(".")
+      .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+"))
+      .join("\\s*\\.\\s*");
+    const versionGuard = /\.\d$/.test(name) ? "" : "(?!\\s*\\.\\s*\\d)";
     return pricingTable.search(
-      new RegExp(`${escapedName}(?![\\d.])[^$]{0,100}\\$`, "i"),
+      new RegExp(`${escapedName}${versionGuard}[^$]{0,100}\\$`, "i"),
     );
   };
   const start = rowStart(modelName);
@@ -170,6 +174,16 @@ const checks = [
     },
   },
   {
+    id: "gpt-6-sol",
+    url: "https://developers.openai.com/api/docs/models/gpt-6-sol",
+    parse: (text) => parseOpenAITextRates(text, "GPT-6 Sol"),
+  },
+  {
+    id: "gpt-6-luna",
+    url: "https://developers.openai.com/api/docs/models/gpt-6-luna",
+    parse: (text) => parseOpenAITextRates(text, "GPT-6 Luna"),
+  },
+  {
     id: "gpt-5.6-sol",
     url: "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
     parse: (text) => {
@@ -198,46 +212,39 @@ const checks = [
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4 mini"),
   },
   {
-    id: "gpt-5.4-nano",
-    url: "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
-    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 nano"),
-  },
-  {
     id: "claude-fable-5.1",
     url: "https://platform.claude.com/docs/en/about-claude/pricing",
     parse: (text) =>
       parseAnthropicPricingRow(text, "Claude Fable 5.1", "Claude Mythos 5.1"),
   },
   {
+    id: "claude-opus-5.5",
+    url: "https://platform.claude.com/docs/en/about-claude/pricing",
+    parse: (text) =>
+      parseAnthropicPricingRow(text, "Claude Opus 5.5", "Claude Opus 5"),
+  },
+  {
     id: "claude-opus-5",
     url: "https://platform.claude.com/docs/en/about-claude/pricing",
-    parse: (text) => {
-      const tableStart = text.indexOf(
-        "The following table shows pricing for all Claude models",
-      );
-      const start = text.indexOf("Claude Opus 5", tableStart);
-      const end = text.indexOf("Claude Opus 4.8", start);
-      if (tableStart < 0 || start < 0 || end < 0) {
-        throw new Error("Claude Opus 5 pricing row not found");
-      }
-      const segment = text.slice(start, end);
-      const values = [...segment.matchAll(/\$([\d.]+)\s*\/\s*MTok/gi)].map(
-        (match) => Number(match[1]),
-      );
-      if (values.length < 5) throw new Error("Claude Opus 5 prices not found");
-      return {
-        input: values[0],
-        cacheWrite: values[1],
-        cacheRead: values[3],
-        output: values[4],
-      };
-    },
+    parse: (text) =>
+      parseAnthropicPricingRow(text, "Claude Opus 5", "Claude Opus 4.8"),
   },
   {
     id: "claude-fable-5",
     url: "https://platform.claude.com/docs/en/about-claude/pricing",
     parse: (text) =>
       parseAnthropicPricingRow(text, "Claude Fable 5", "Claude Mythos 5"),
+  },
+  {
+    id: "grok-4.7",
+    url: "https://docs.x.ai/developers/models/grok-4.7",
+    parse: (text) => {
+      const input = Number(text.match(/Input Tokens\s*\$([\d.]+)/i)?.[1]);
+      const cacheRead = Number(text.match(/Cached tokens\s*\$([\d.]+)/i)?.[1]);
+      const output = Number(text.match(/Output Tokens\s*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Grok 4.7 prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
+    },
   },
   {
     id: "grok-4.5",
@@ -251,16 +258,32 @@ const checks = [
     },
   },
   {
-    id: "grok-4.3",
+    id: "grok-build-0.1",
     url: "https://docs.x.ai/developers/pricing",
     parse: (text) => {
-      const segment = text.slice(text.indexOf("grok-4.3"), text.indexOf("Imagine API"));
-      const values = [...segment.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
-      if (values.length < 3) throw new Error("Grok 4.3 prices not found");
       const build = text.slice(text.indexOf("grok-build-0.1"), text.indexOf("Chat API"));
       const buildValues = [...build.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
-      if (buildValues.length >= 3) update("grok-build-0.1", { input: buildValues[0], cacheRead: buildValues[1], cacheWrite: buildValues[0], output: buildValues[2] });
-      return { input: values[0], cacheRead: values[1], cacheWrite: values[0], output: values[2] };
+      if (buildValues.length < 3) throw new Error("Grok Build 0.1 prices not found");
+      return { input: buildValues[0], cacheRead: buildValues[1], cacheWrite: buildValues[0], output: buildValues[2] };
+    },
+  },
+  {
+    id: "muse-spark-1.3",
+    url: "https://dev.meta.ai/docs/pricing-rate-limits",
+    parse: (text) => {
+      const start = text.indexOf("Standard tier");
+      const end = text.indexOf("Contributor tier", start);
+      const segment = text.slice(start, end);
+      if (start < 0 || end < 0 || !segment.includes("muse-spark-1.3")) {
+        throw new Error("Muse Spark 1.3 pricing row not found");
+      }
+      const cacheRead = Number(segment.match(/Cached input\s*\$([\d.]+)/i)?.[1]);
+      const input = Number(
+        segment.match(/Cached input\s*\$[\d.]+\s*Input\s*\$([\d.]+)/i)?.[1],
+      );
+      const output = Number(segment.match(/Output\s*\$([\d.]+)/i)?.[1]);
+      if (!input || !output || !cacheRead) throw new Error("Muse Spark 1.3 prices not found");
+      return { input, output, cacheWrite: input, cacheRead };
     },
   },
   {
@@ -521,21 +544,6 @@ for (const check of checks) {
   } catch (error) {
     console.warn(`Kept existing ${check.id}: ${error.message}`);
   }
-}
-
-// Meta's public announcement is checked for model availability. Its pricing
-// portal requires authentication, so the verified standard rate is retained.
-try {
-  const metaText = await getText(
-    "https://research.meta.ai/blog/introducing-muse-code-and-muse-spark-1-2",
-  );
-  if (!metaText.includes("Muse Spark 1.2")) {
-    throw new Error("model marker missing");
-  }
-  succeeded += 1;
-  console.log("Checked muse-spark-1.2 availability");
-} catch (error) {
-  console.warn(`Meta availability check failed: ${error.message}`);
 }
 
 if (succeeded === 0) throw new Error("No official pricing source could be read");

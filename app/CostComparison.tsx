@@ -158,13 +158,21 @@ export function CostComparison() {
   const [providers, setProviders] = useState(() =>
     Object.fromEntries(uniqueProviders.map((provider) => [provider, true])),
   );
+  const [selectedModels, setSelectedModels] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(pricingData.models.map((model) => [model.id, true])),
+  );
+  const selectedProviderCount = uniqueProviders.filter((provider) => providers[provider]).length;
+  const selectedModelCount = pricingData.models.filter((model) => selectedModels[model.id]).length;
+  const filteredModels = useMemo(
+    () => pricingData.models.filter((model) => providers[model.provider] && selectedModels[model.id]),
+    [providers, selectedModels],
+  );
 
   const selectedUseCase =
     useCases.find((useCase) => useCase.id === activeUseCase) ?? useCases[0];
 
   const results = useMemo(() => {
-    return pricingData.models
-      .filter((model) => providers[model.provider])
+    return filteredModels
       .map((model) => ({
         model,
         cost:
@@ -175,13 +183,12 @@ export function CostComparison() {
       .sort((a, b) =>
         sortDirection === "asc" ? a.cost - b.cost : b.cost - a.cost,
       );
-  }, [mode, providers, selectedUseCase, sortDirection]);
+  }, [filteredModels, mode, selectedUseCase, sortDirection]);
 
   const rateRows = useMemo(() => {
     const direction = rateSortDirection === "asc" ? 1 : -1;
 
-    return pricingData.models
-      .filter((model) => providers[model.provider])
+    return filteredModels
       .sort((a, b) => {
         if (rateSortKey === "model" || rateSortKey === "provider") {
           const left = rateSortKey === "model" ? a.name : a.provider;
@@ -199,7 +206,7 @@ export function CostComparison() {
         if (right === null) return -1;
         return (left - right) * direction || a.name.localeCompare(b.name);
       });
-  }, [providers, rateSortDirection, rateSortKey]);
+  }, [filteredModels, rateSortDirection, rateSortKey]);
 
   const maxCost = Math.max(...results.map((result) => result.cost), 0.000001);
 
@@ -215,6 +222,10 @@ export function CostComparison() {
 
   function toggleProvider(provider: string) {
     setProviders((current) => ({ ...current, [provider]: !current[provider] }));
+  }
+
+  function toggleModel(modelId: string) {
+    setSelectedModels((current) => ({ ...current, [modelId]: !current[modelId] }));
   }
 
   function sortRates(key: RateSortKey) {
@@ -241,8 +252,6 @@ export function CostComparison() {
       ? ("ascending" as const)
       : ("descending" as const);
   }
-
-  const allVisible = Object.values(providers).every(Boolean);
 
   return (
     <main className="site-shell">
@@ -337,32 +346,71 @@ export function CostComparison() {
       )}
 
       <section className="provider-filter" aria-label="プロバイダー絞り込み">
-        <div className="section-label">
-          <span>プロバイダー</span>
-          <button
-            type="button"
-            onClick={() =>
-              setProviders(
-                Object.fromEntries(
-                  uniqueProviders.map((provider) => [provider, !allVisible]),
-                ),
-              )
-            }
-          >
-            {allVisible ? "すべて解除" : "すべて表示"}
-          </button>
-        </div>
-        <div className="filter-list">
-          {uniqueProviders.map((provider) => (
-            <label key={provider}>
-              <input
-                type="checkbox"
-                checked={providers[provider]}
-                onChange={() => toggleProvider(provider)}
-              />
-              <span>{provider}</span>
-            </label>
-          ))}
+        <div className="filter-dropdowns">
+          <details className="filter-dropdown">
+            <summary>
+              <span>プロバイダー</span>
+              <span className="selection-count">{selectedProviderCount}/{uniqueProviders.length}</span>
+            </summary>
+            <div className="filter-menu">
+              <div className="filter-menu-actions">
+                <button
+                  type="button"
+                  onClick={() => setProviders(Object.fromEntries(uniqueProviders.map((provider) => [provider, true])))}
+                >すべて選択</button>
+                <button
+                  type="button"
+                  onClick={() => setProviders(Object.fromEntries(uniqueProviders.map((provider) => [provider, false])))}
+                >すべて解除</button>
+              </div>
+              <div className="filter-options">
+                {uniqueProviders.map((provider) => (
+                  <label key={provider}>
+                    <input
+                      type="checkbox"
+                      checked={providers[provider]}
+                      onChange={() => toggleProvider(provider)}
+                    />
+                    <span>{provider}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </details>
+
+          <details className="filter-dropdown">
+            <summary>
+              <span>モデル</span>
+              <span className="selection-count">{selectedModelCount}/{pricingData.models.length}</span>
+            </summary>
+            <div className="filter-menu model-filter-menu">
+              <div className="filter-menu-actions">
+                <button
+                  type="button"
+                  onClick={() => setSelectedModels(Object.fromEntries(pricingData.models.map((model) => [model.id, true])))}
+                >すべて選択</button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedModels(Object.fromEntries(pricingData.models.map((model) => [model.id, false])))}
+                >すべて解除</button>
+              </div>
+              <div className="filter-options">
+                {pricingData.models.map((model) => (
+                  <label key={model.id}>
+                    <input
+                      type="checkbox"
+                      checked={selectedModels[model.id]}
+                      onChange={() => toggleModel(model.id)}
+                    />
+                    <span className="model-filter-name">
+                      <span>{model.name}</span>
+                      <small>{model.provider}</small>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -546,7 +594,7 @@ export function CostComparison() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pricingData.models.map((model) => (
+                  {filteredModels.map((model) => (
                     <tr key={model.id}>
                       <td>{model.name}</td>
                       <td>{displayRate(model.pricing.input)}</td>

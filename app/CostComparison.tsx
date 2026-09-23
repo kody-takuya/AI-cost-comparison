@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import pricingData from "@/data/pricing.json";
 
 type TokenProfile = {
@@ -143,6 +143,7 @@ function displayRate(value: number) {
 }
 
 export function CostComparison() {
+  const filterContainerRef = useRef<HTMLElement>(null);
   const [mode, setMode] = useState<Mode>("tokens");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [rateSortKey, setRateSortKey] = useState<RateSortKey>("input");
@@ -167,6 +168,37 @@ export function CostComparison() {
     () => pricingData.models.filter((model) => providers[model.provider] && selectedModels[model.id]),
     [providers, selectedModels],
   );
+
+  useEffect(() => {
+    const closeFilters = () => {
+      filterContainerRef.current
+        ?.querySelectorAll<HTMLDetailsElement>(".filter-dropdown[open]")
+        .forEach((dropdown) => dropdown.removeAttribute("open"));
+    };
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Node && !filterContainerRef.current?.contains(target)) {
+        closeFilters();
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      const activeDropdown = (document.activeElement as HTMLElement | null)?.closest<HTMLDetailsElement>(
+        ".filter-dropdown[open]",
+      );
+      if (!activeDropdown) return;
+      event.preventDefault();
+      activeDropdown.querySelector<HTMLElement>("summary")?.focus();
+      closeFilters();
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const selectedUseCase =
     useCases.find((useCase) => useCase.id === activeUseCase) ?? useCases[0];
@@ -345,7 +377,7 @@ export function CostComparison() {
         </section>
       )}
 
-      <section className="provider-filter" aria-label="プロバイダー絞り込み">
+      <section ref={filterContainerRef} className="provider-filter" aria-label="プロバイダー・モデル絞り込み">
         <div className="filter-dropdowns">
           <details className="filter-dropdown">
             <summary>

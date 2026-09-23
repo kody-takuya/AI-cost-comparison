@@ -163,10 +163,14 @@ export function CostComparison() {
     () => Object.fromEntries(pricingData.models.map((model) => [model.id, true])),
   );
   const selectedProviderCount = uniqueProviders.filter((provider) => providers[provider]).length;
-  const selectedModelCount = pricingData.models.filter((model) => selectedModels[model.id]).length;
+  const availableModels = useMemo(
+    () => pricingData.models.filter((model) => providers[model.provider]),
+    [providers],
+  );
+  const selectedModelCount = availableModels.filter((model) => selectedModels[model.id]).length;
   const filteredModels = useMemo(
-    () => pricingData.models.filter((model) => providers[model.provider] && selectedModels[model.id]),
-    [providers, selectedModels],
+    () => availableModels.filter((model) => selectedModels[model.id]),
+    [availableModels, selectedModels],
   );
 
   useEffect(() => {
@@ -413,21 +417,27 @@ export function CostComparison() {
           <details className="filter-dropdown">
             <summary>
               <span>モデル</span>
-              <span className="selection-count">{selectedModelCount}/{pricingData.models.length}</span>
+              <span className="selection-count">{selectedModelCount}/{availableModels.length}</span>
             </summary>
             <div className="filter-menu model-filter-menu">
               <div className="filter-menu-actions">
                 <button
                   type="button"
-                  onClick={() => setSelectedModels(Object.fromEntries(pricingData.models.map((model) => [model.id, true])))}
-                >すべて選択</button>
+                  onClick={() => setSelectedModels((current) => ({
+                    ...current,
+                    ...Object.fromEntries(availableModels.map((model) => [model.id, true])),
+                  }))}
+                >表示中をすべて選択</button>
                 <button
                   type="button"
-                  onClick={() => setSelectedModels(Object.fromEntries(pricingData.models.map((model) => [model.id, false])))}
-                >すべて解除</button>
+                  onClick={() => setSelectedModels((current) => ({
+                    ...current,
+                    ...Object.fromEntries(availableModels.map((model) => [model.id, false])),
+                  }))}
+                >表示中をすべて解除</button>
               </div>
               <div className="filter-options">
-                {pricingData.models.map((model) => (
+                {availableModels.map((model) => (
                   <label key={model.id}>
                     <input
                       type="checkbox"
@@ -440,6 +450,9 @@ export function CostComparison() {
                     </span>
                   </label>
                 ))}
+                {availableModels.length === 0 && (
+                  <p className="filter-empty">プロバイダーを選択してください。</p>
+                )}
               </div>
             </div>
           </details>

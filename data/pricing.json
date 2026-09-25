@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-25",
   "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。",
   "models": [
     {
@@ -499,10 +499,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.78908,
-        "output": 5.36724,
-        "cacheWrite": 2.23635,
-        "cacheRead": 0.14909
+        "input": 1.78764,
+        "output": 5.36292,
+        "cacheWrite": 2.23455,
+        "cacheRead": 0.14897
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -511,10 +511,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119272,
-        "output": 0.402543,
-        "cacheWrite": 0.186362,
-        "cacheRead": 0.014909
+        "input": 0.119176,
+        "output": 0.402219,
+        "cacheWrite": 0.186213,
+        "cacheRead": 0.014897
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -523,10 +523,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78908,
-        "output": 5.36724,
-        "cacheWrite": 2.23635,
-        "cacheRead": 0.178908
+        "input": 1.78764,
+        "output": 5.36292,
+        "cacheWrite": 2.23455,
+        "cacheRead": 0.178764
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

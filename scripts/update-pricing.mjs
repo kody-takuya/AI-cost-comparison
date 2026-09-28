@@ -94,9 +94,9 @@ function parseAnthropicPricingRow(text, modelName, nextModelName) {
   if (values.length < 5) throw new Error(`${modelName} prices not found`);
   return {
     input: values[0],
-    cacheWrite: values[1],
-    cacheRead: values[3],
-    output: values[4],
+    output: values[1],
+    cacheWrite: values[2],
+    cacheRead: values[4],
   };
 }
 
@@ -210,6 +210,29 @@ const checks = [
     id: "gpt-5.4-mini",
     url: "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
     parse: (text) => parseOpenAITextRates(text, "GPT-5.4 mini"),
+  },
+  {
+    id: "claude-sonnet-5.5",
+    url: "https://www.anthropic.com/claude-sonnet-5-5",
+    parse: (text) => {
+      const start = text.indexOf("Price per 1M tokens");
+      const end = text.indexOf("Sonnet 5.5 requires fewer tokens", start);
+      const segment = text.slice(start, end);
+      if (start < 0 || end < 0 || !segment.includes("Claude Sonnet 5.5")) {
+        throw new Error("Claude Sonnet 5.5 pricing table not found");
+      }
+      const rate = (label) => {
+        const value = Number(segment.match(new RegExp(`${label}\\s*\\$([\\d.]+)`, "i"))?.[1]);
+        if (!value) throw new Error(`Claude Sonnet 5.5 ${label} price not found`);
+        return value;
+      };
+      return {
+        cacheRead: rate("Cache reads"),
+        cacheWrite: rate("Cache writes"),
+        input: rate("Input tokens"),
+        output: rate("Output tokens"),
+      };
+    },
   },
   {
     id: "claude-fable-5.1",

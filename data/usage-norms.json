@@ -1,0 +1,98 @@
+{
+  "updatedAt": "2026-09-30",
+  "profiles": [
+    {
+      "id": "chat",
+      "label": "単純な会話",
+      "description": "数往復の質問・相談",
+      "input": 6000,
+      "output": 2000,
+      "cacheWrite": 2000,
+      "cacheRead": 6000,
+      "monthlyCount": 100
+    },
+    {
+      "id": "research",
+      "label": "リサーチ",
+      "description": "複数資料を読み、根拠付きで整理",
+      "input": 80000,
+      "output": 12000,
+      "cacheWrite": 20000,
+      "cacheRead": 60000,
+      "monthlyCount": 20
+    },
+    {
+      "id": "development",
+      "label": "ソフトウェア開発",
+      "description": "エージェントでコード調査・実装・検証（1依頼）",
+      "input": 10000,
+      "output": 5000,
+      "cacheWrite": 50000,
+      "cacheRead": 1300000,
+      "monthlyCount": 30
+    },
+    {
+      "id": "document",
+      "label": "ビジネス文書",
+      "description": "資料を基に文書を作成・推敲",
+      "input": 30000,
+      "output": 8000,
+      "cacheWrite": 10000,
+      "cacheRead": 25000,
+      "monthlyCount": 40
+    },
+    {
+      "id": "summarization",
+      "label": "長文の要約",
+      "description": "長い文書・議事録を短く整理",
+      "input": 100000,
+      "output": 5000,
+      "cacheWrite": 0,
+      "cacheRead": 0,
+      "monthlyCount": 30
+    },
+    {
+      "id": "data-analysis",
+      "label": "データ分析",
+      "description": "表データを読み、傾向と示唆を出力",
+      "input": 60000,
+      "output": 15000,
+      "cacheWrite": 20000,
+      "cacheRead": 40000,
+      "monthlyCount": 20
+    },
+    {
+      "id": "translation",
+      "label": "翻訳",
+      "description": "まとまった文書を別言語へ翻訳",
+      "input": 25000,
+      "output": 28000,
+      "cacheWrite": 2000,
+      "cacheRead": 5000,
+      "monthlyCount": 50
+    },
+    {
+      "id": "extraction",
+      "label": "構造化抽出",
+      "description": "文書から項目を抽出しJSON化",
+      "input": 40000,
+      "output": 3000,
+      "cacheWrite": 5000,
+      "cacheRead": 15000,
+      "monthlyCount": 100
+    }
+  ],
+  "evidence": {
+    "development": {
+      "unit": "コーディングエージェントに対するユーザーの1依頼。継続セッション全体ではない。",
+      "basis": "SyFI TraceLabの公開トレース（Claude CodeとCodex、8058セッション、平均10.1依頼/セッション）。総計1092億キャッシュ読込、50.1億新規入力、3.918億出力トークンを依頼数で割り、約134万・6.2万・4800トークン/依頼と推定して丸めた。",
+      "cacheWriteAssumption": "新規入力約6万トークンのうち5万をキャッシュ書込、1万を未キャッシュ入力とする暫定配分。公開トレースの集計値からこの内訳は直接観測できず、プロバイダーやハーネスによって変わる。",
+      "sources": [
+        "https://tracelab.cs.washington.edu/",
+        "https://tracelab.cs.washington.edu/exp/session/session_internal_counts/",
+        "https://tracelab.cs.washington.edu/exp/prefix_cache/cache_hit_ratio/",
+        "https://tracelab.cs.washington.edu/exp/session/session_cost_distribution/"
+      ]
+    }
+  }
+}

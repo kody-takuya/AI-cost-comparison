@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import pricingData from "@/data/pricing.json";
+import usageNorms from "@/data/usage-norms.json";
 
 type TokenProfile = {
   input: number;
@@ -22,88 +23,7 @@ type TokenKey = keyof TokenProfile;
 type Mode = "task" | "monthly" | "tokens";
 type RateSortKey = "model" | "provider" | TokenKey;
 
-const defaultUseCases: UseCase[] = [
-  {
-    id: "chat",
-    label: "単純な会話",
-    description: "数往復の質問・相談",
-    input: 6_000,
-    output: 2_000,
-    cacheWrite: 2_000,
-    cacheRead: 6_000,
-    monthlyCount: 100,
-  },
-  {
-    id: "research",
-    label: "リサーチ",
-    description: "複数資料を読み、根拠付きで整理",
-    input: 80_000,
-    output: 12_000,
-    cacheWrite: 20_000,
-    cacheRead: 60_000,
-    monthlyCount: 20,
-  },
-  {
-    id: "development",
-    label: "ソフトウェア開発",
-    description: "コードベースを読み、実装と検証",
-    input: 120_000,
-    output: 40_000,
-    cacheWrite: 50_000,
-    cacheRead: 180_000,
-    monthlyCount: 30,
-  },
-  {
-    id: "document",
-    label: "ビジネス文書",
-    description: "資料を基に文書を作成・推敲",
-    input: 30_000,
-    output: 8_000,
-    cacheWrite: 10_000,
-    cacheRead: 25_000,
-    monthlyCount: 40,
-  },
-  {
-    id: "summarization",
-    label: "長文の要約",
-    description: "長い文書・議事録を短く整理",
-    input: 100_000,
-    output: 5_000,
-    cacheWrite: 0,
-    cacheRead: 0,
-    monthlyCount: 30,
-  },
-  {
-    id: "data-analysis",
-    label: "データ分析",
-    description: "表データを読み、傾向と示唆を出力",
-    input: 60_000,
-    output: 15_000,
-    cacheWrite: 20_000,
-    cacheRead: 40_000,
-    monthlyCount: 20,
-  },
-  {
-    id: "translation",
-    label: "翻訳",
-    description: "まとまった文書を別言語へ翻訳",
-    input: 25_000,
-    output: 28_000,
-    cacheWrite: 2_000,
-    cacheRead: 5_000,
-    monthlyCount: 50,
-  },
-  {
-    id: "extraction",
-    label: "構造化抽出",
-    description: "文書から項目を抽出しJSON化",
-    input: 40_000,
-    output: 3_000,
-    cacheWrite: 5_000,
-    cacheRead: 15_000,
-    monthlyCount: 100,
-  },
-];
+const defaultUseCases: UseCase[] = usageNorms.profiles;
 
 const tokenFields: { key: TokenKey; label: string }[] = [
   { key: "input", label: "未キャッシュ入力" },

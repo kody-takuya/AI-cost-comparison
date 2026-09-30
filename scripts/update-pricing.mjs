@@ -174,6 +174,11 @@ const checks = [
     },
   },
   {
+    id: "gpt-6.1-sol",
+    url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+    parse: (text) => parseOpenAITextRates(text, "GPT-6.1 Sol"),
+  },
+  {
     id: "gpt-6-sol",
     url: "https://developers.openai.com/api/docs/models/gpt-6-sol",
     parse: (text) => parseOpenAITextRates(text, "GPT-6 Sol"),

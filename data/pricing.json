@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-29",
+  "updatedAt": "2026-09-30",
   "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。",
   "models": [
     {
@@ -13,6 +13,18 @@
         "cacheRead": 1
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-6-astra"
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "provider": "OpenAI",
+      "name": "GPT-6.1 Sol",
+      "pricing": {
+        "input": 2,
+        "output": 10,
+        "cacheWrite": 2.5,
+        "cacheRead": 0.1
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
     },
     {
       "id": "gpt-6-sol",

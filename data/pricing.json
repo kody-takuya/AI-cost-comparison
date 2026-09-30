@@ -116,9 +116,9 @@
       "name": "Claude Fable 5.1",
       "pricing": {
         "input": 10,
-        "output": 0.25,
-        "cacheWrite": 50,
-        "cacheRead": 20
+        "output": 50,
+        "cacheWrite": 12.5,
+        "cacheRead": 0.25
       },
       "source": "https://platform.claude.com/docs/en/models/fable-5-1/overview"
     },
@@ -128,9 +128,9 @@
       "name": "Claude Fable 5",
       "pricing": {
         "input": 10,
-        "output": 1,
-        "cacheWrite": 50,
-        "cacheRead": 20
+        "output": 50,
+        "cacheWrite": 12.5,
+        "cacheRead": 1
       },
       "source": "https://claude.com/pricing#api"
     },
@@ -140,9 +140,9 @@
       "name": "Claude Opus 5",
       "pricing": {
         "input": 5,
-        "output": 0.5,
-        "cacheWrite": 25,
-        "cacheRead": 10
+        "output": 25,
+        "cacheWrite": 6.25,
+        "cacheRead": 0.5
       },
       "source": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
@@ -152,9 +152,9 @@
       "name": "Claude Opus 5.5",
       "pricing": {
         "input": 4,
-        "output": 0.2,
-        "cacheWrite": 20,
-        "cacheRead": 8
+        "output": 20,
+        "cacheWrite": 5,
+        "cacheRead": 0.2
       },
       "source": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
@@ -523,10 +523,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.78752,
-        "output": 5.36256,
-        "cacheWrite": 2.2344,
-        "cacheRead": 0.14896
+        "input": 1.78824,
+        "output": 5.36472,
+        "cacheWrite": 2.2353,
+        "cacheRead": 0.14902
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -535,10 +535,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119168,
-        "output": 0.402192,
-        "cacheWrite": 0.1862,
-        "cacheRead": 0.014896
+        "input": 0.119216,
+        "output": 0.402354,
+        "cacheWrite": 0.186275,
+        "cacheRead": 0.014902
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -547,10 +547,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.78752,
-        "output": 5.36256,
-        "cacheWrite": 2.2344,
-        "cacheRead": 0.178752
+        "input": 1.78824,
+        "output": 5.36472,
+        "cacheWrite": 2.2353,
+        "cacheRead": 0.178824
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

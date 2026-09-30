@@ -315,6 +315,15 @@ const checks = [
     },
   },
   {
+    id: "gemini-3.8-flash",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const start = text.indexOf("Gemini 3.8 Flash");
+      const segment = text.slice(start, text.indexOf("Gemini 3.7 Flash", start));
+      return parseIntroductoryGeminiFlashRates(segment, "Gemini 3.8 Flash");
+    },
+  },
+  {
     id: "gemini-3.7-flash",
     url: "https://ai.google.dev/gemini-api/docs/pricing",
     parse: (text) => {

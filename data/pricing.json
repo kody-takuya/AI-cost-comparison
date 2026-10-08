@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-01",
-  "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。",
+  "updatedAt": "2026-10-09",
+  "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
   "models": [
     {
       "id": "gpt-6-astra",
@@ -178,9 +178,9 @@
         "input": 2,
         "output": 10,
         "cacheWrite": 2.5,
-        "cacheRead": 0.2
+        "cacheRead": 0.1
       },
-      "source": "https://www.anthropic.com/claude-sonnet-5-5"
+      "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview"
     },
     {
       "id": "claude-sonnet-5",
@@ -193,6 +193,18 @@
         "cacheRead": 0.2
       },
       "source": "https://claude.com/pricing#api"
+    },
+    {
+      "id": "claude-haiku-5.5",
+      "provider": "Anthropic",
+      "name": "Claude Haiku 5.5 (≤100k/回)",
+      "pricing": {
+        "input": 0.1,
+        "output": 0.5,
+        "cacheWrite": 0.125,
+        "cacheRead": 0.01
+      },
+      "source": "https://platform.claude.com/docs/en/models/haiku-5-5/overview"
     },
     {
       "id": "grok-4.7",

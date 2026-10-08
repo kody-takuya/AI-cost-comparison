@@ -67,6 +67,29 @@ function parseOpenAIPricingRow(text, modelId) {
   };
 }
 
+function parseAnthropicModelOverviewRates(text, modelName) {
+  const specifications = text.indexOf("Specifications");
+  const pricingStart = text.indexOf("Pricing", specifications);
+  const pricingEnd = text.indexOf("Capabilities", pricingStart);
+  if (specifications < 0 || pricingStart < 0 || pricingEnd < 0) {
+    throw new Error(`${modelName} pricing section not found`);
+  }
+  const pricing = text.slice(pricingStart, pricingEnd);
+  const rate = (label) => {
+    const value = Number(
+      pricing.match(new RegExp(`${label}\\s*\\$([\\d.]+)\\s*\\/\\s*MTok`, "i"))?.[1],
+    );
+    if (!value) throw new Error(`${modelName} ${label} price not found`);
+    return value;
+  };
+  return {
+    input: rate("Input"),
+    output: rate("Output"),
+    cacheWrite: rate("5m cache write"),
+    cacheRead: rate("Cache read"),
+  };
+}
+
 function parseAnthropicPricingRow(text, modelName, nextModelName) {
   const tableStart = text.indexOf(
     "The following table shows pricing for all Claude models",
@@ -218,26 +241,13 @@ const checks = [
   },
   {
     id: "claude-sonnet-5.5",
-    url: "https://www.anthropic.com/claude-sonnet-5-5",
-    parse: (text) => {
-      const start = text.indexOf("Price per 1M tokens");
-      const end = text.indexOf("Sonnet 5.5 requires fewer tokens", start);
-      const segment = text.slice(start, end);
-      if (start < 0 || end < 0 || !segment.includes("Claude Sonnet 5.5")) {
-        throw new Error("Claude Sonnet 5.5 pricing table not found");
-      }
-      const rate = (label) => {
-        const value = Number(segment.match(new RegExp(`${label}\\s*\\$([\\d.]+)`, "i"))?.[1]);
-        if (!value) throw new Error(`Claude Sonnet 5.5 ${label} price not found`);
-        return value;
-      };
-      return {
-        cacheRead: rate("Cache reads"),
-        cacheWrite: rate("Cache writes"),
-        input: rate("Input tokens"),
-        output: rate("Output tokens"),
-      };
-    },
+    url: "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+    parse: (text) => parseAnthropicModelOverviewRates(text, "Claude Sonnet 5.5"),
+  },
+  {
+    id: "claude-haiku-5.5",
+    url: "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+    parse: (text) => parseAnthropicModelOverviewRates(text, "Claude Haiku 5.5"),
   },
   {
     id: "claude-fable-5.1",

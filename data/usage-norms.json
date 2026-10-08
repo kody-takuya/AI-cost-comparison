@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-30",
+  "updatedAt": "2026-10-09",
   "profiles": [
     {
       "id": "chat",
@@ -9,6 +9,7 @@
       "output": 2000,
       "cacheWrite": 2000,
       "cacheRead": 6000,
+      "haiku55LongPromptPercent": 0,
       "monthlyCount": 100
     },
     {
@@ -19,6 +20,7 @@
       "output": 12000,
       "cacheWrite": 20000,
       "cacheRead": 60000,
+      "haiku55LongPromptPercent": 10,
       "monthlyCount": 20
     },
     {
@@ -29,6 +31,7 @@
       "output": 5000,
       "cacheWrite": 50000,
       "cacheRead": 1300000,
+      "haiku55LongPromptPercent": 80,
       "monthlyCount": 30
     },
     {
@@ -39,6 +42,7 @@
       "output": 8000,
       "cacheWrite": 10000,
       "cacheRead": 25000,
+      "haiku55LongPromptPercent": 0,
       "monthlyCount": 40
     },
     {
@@ -49,6 +53,7 @@
       "output": 5000,
       "cacheWrite": 0,
       "cacheRead": 0,
+      "haiku55LongPromptPercent": 100,
       "monthlyCount": 30
     },
     {
@@ -59,6 +64,7 @@
       "output": 15000,
       "cacheWrite": 20000,
       "cacheRead": 40000,
+      "haiku55LongPromptPercent": 10,
       "monthlyCount": 20
     },
     {
@@ -69,6 +75,7 @@
       "output": 28000,
       "cacheWrite": 2000,
       "cacheRead": 5000,
+      "haiku55LongPromptPercent": 0,
       "monthlyCount": 50
     },
     {
@@ -79,10 +86,30 @@
       "output": 3000,
       "cacheWrite": 5000,
       "cacheRead": 15000,
+      "haiku55LongPromptPercent": 0,
       "monthlyCount": 100
     }
   ],
   "evidence": {
+    "haiku55": {
+      "basis": "10万トークンの境界はタスク合計ではなく1回のAPIプロンプト（未キャッシュ入力＋キャッシュ書込＋キャッシュ読込）に適用され、超過時はそのリクエストの入力・出力・キャッシュ料金がすべて5倍。比率は同種タスクを繰り返した場合、10万超プロンプトに属する請求対象トークンの期待割合という暫定推定であり、実測値ではない。計算では未キャッシュ入力・出力・キャッシュ書込・キャッシュ読込に同じ比率を仮定する。",
+      "assumptions": {
+        "chat": "数往復に分けてもタスク合計の入力は1.4万トークンで、各プロンプトは10万未満。",
+        "research": "入力合計16万トークンを通常は複数回で処理。大きな資料を一括投入するタスクも混じるため、同種タスク全体では請求対象トークンの10%が10万超プロンプトに属すると見込む。",
+        "development": "1依頼で入力合計136万トークン。SyFI TraceLabでは1依頼あたり平均約7.6モデル呼び出し、Claude側のキャッシュされた文脈は中央値14.1万・平均21.5万トークン/呼び出し。10万超の呼び出しに請求対象トークンの約80%が属すると暫定推定する。",
+        "document": "入力合計6.5万トークンで、1回にまとめても10万未満。",
+        "summarization": "原文だけで入力10万トークン。指示文などが加わると単一プロンプトで10万を超えると想定する。",
+        "data-analysis": "入力合計12万トークンを通常は複数回で処理。大きな表を一括投入するタスクも混じるため、同種タスク全体では請求対象トークンの10%が10万超プロンプトに属すると見込む。",
+        "translation": "入力合計3.2万トークンで、1回にまとめても10万未満。",
+        "extraction": "入力合計6万トークンで、1回にまとめても10万未満。"
+      },
+      "sources": [
+        "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+        "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+        "https://tracelab.cs.washington.edu/exp/llm_generation/token_length_distribution/",
+        "https://tracelab.cs.washington.edu/exp/session/session_internal_counts/"
+      ]
+    },
     "development": {
       "unit": "コーディングエージェントに対するユーザーの1依頼。継続セッション全体ではない。",
       "basis": "SyFI TraceLabの公開トレース（Claude CodeとCodex、8058セッション、平均10.1依頼/セッション）。総計1092億キャッシュ読込、50.1億新規入力、3.918億出力トークンを依頼数で割り、約134万・6.2万・4800トークン/依頼と推定して丸めた。",

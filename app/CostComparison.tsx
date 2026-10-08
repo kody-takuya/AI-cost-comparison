@@ -15,6 +15,7 @@ type UseCase = TokenProfile & {
   id: string;
   label: string;
   description: string;
+  haiku55LongPromptPercent: number;
   monthlyCount: number;
 };
 
@@ -40,13 +41,16 @@ const usd = new Intl.NumberFormat("ja-JP", {
 });
 
 function taskCost(model: Model, useCase: UseCase) {
-  return (
+  const baseCost =
     (useCase.input * model.pricing.input +
       useCase.output * model.pricing.output +
       useCase.cacheWrite * (model.pricing.cacheWrite ?? model.pricing.input) +
       useCase.cacheRead * (model.pricing.cacheRead ?? model.pricing.input)) /
-    1_000_000
-  );
+    1_000_000;
+  // Haiku 5.5 charges every token in a >100k-input request at 5x, not just the excess.
+  return model.id === "claude-haiku-5.5"
+    ? baseCost * (1 + 4 * useCase.haiku55LongPromptPercent / 100)
+    : baseCost;
 }
 
 function displayCost(value: number) {
@@ -166,11 +170,16 @@ export function CostComparison() {
 
   const maxCost = Math.max(...results.map((result) => result.cost), 0.000001);
 
-  function updateUseCase(key: TokenKey | "monthlyCount", value: number) {
+  function updateUseCase(key: TokenKey | "monthlyCount" | "haiku55LongPromptPercent", value: number) {
     setUseCases((current) =>
       current.map((useCase) =>
         useCase.id === activeUseCase
-          ? { ...useCase, [key]: Math.max(0, Math.round(value || 0)) }
+          ? {
+              ...useCase,
+              [key]: key === "haiku55LongPromptPercent"
+                ? Math.min(100, Math.max(0, Math.round(value || 0)))
+                : Math.max(0, Math.round(value || 0)),
+            }
           : useCase,
       ),
     );
@@ -296,6 +305,28 @@ export function CostComparison() {
                   </div>
                 </label>
               ))}
+            </div>
+            <div className="haiku-long-prompt">
+              <label>
+                <span>Haiku 5.5：10万超プロンプトで請求されるトークン</span>
+                <span className="haiku-long-prompt-input">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={selectedUseCase.haiku55LongPromptPercent}
+                    onChange={(event) =>
+                      updateUseCase("haiku55LongPromptPercent", Number(event.target.value))
+                    }
+                  />
+                  <b>%</b>
+                </span>
+              </label>
+              <p>
+                {usageNorms.evidence.haiku55.assumptions[selectedUseCase.id as keyof typeof usageNorms.evidence.haiku55.assumptions]}{" "}
+                <a href="https://platform.claude.com/docs/en/models/haiku-5-5/overview" target="_blank" rel="noreferrer">料金条件</a>
+              </p>
             </div>
           </div>
         </section>
@@ -528,6 +559,9 @@ export function CostComparison() {
                       </div>
                     )}
                   </dl>
+                  {model.id === "claude-haiku-5.5" && (
+                    <p>10万超プロンプトの推定割合 {selectedUseCase.haiku55LongPromptPercent}%を5倍料金で計算</p>
+                  )}
                 </div>
               </article>
               );
@@ -541,7 +575,7 @@ export function CostComparison() {
 
       <footer>
         <p>
-          Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税、ツール利用料、長文割増を含みません。
+          Last updated: {pricingData.updatedAt} · 単価は100万トークンあたり。料金は税・ツール利用料を含みません。{mode === "tokens" ? "トークン単価表は長文割増を含みません。" : "Haiku 5.5以外の長文割増は含みません。"}
         </p>
         <p>{pricingData.notice}</p>
         {mode !== "tokens" && (

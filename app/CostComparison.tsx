@@ -526,7 +526,7 @@ export function CostComparison() {
                 aria-describedby={tooltipId}
               >
                 <div className="model-name">
-                  <strong>{model.name}</strong>
+                  <strong>{model.id === "claude-haiku-5.5" ? "Claude Haiku 5.5" : model.name}</strong>
                   <span>{model.provider}</span>
                 </div>
                 <div className="bar-track" aria-hidden="true">

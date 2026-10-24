@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-23",
+  "updatedAt": "2026-10-24",
   "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
   "models": [
     {
@@ -391,10 +391,10 @@
       "provider": "Moonshot AI",
       "name": "Kimi K3",
       "pricing": {
-        "input": 3,
-        "output": 15,
-        "cacheWrite": 3,
-        "cacheRead": 0.3
+        "input": 2,
+        "output": 10,
+        "cacheWrite": 2,
+        "cacheRead": 0.2
       },
       "source": "https://platform.kimi.ai/"
     },
@@ -547,10 +547,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.79796,
-        "output": 5.39388,
-        "cacheWrite": 2.24745,
-        "cacheRead": 0.14983
+        "input": 1.79904,
+        "output": 5.39712,
+        "cacheWrite": 2.2488,
+        "cacheRead": 0.14992
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -559,10 +559,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119864,
-        "output": 0.404541,
-        "cacheWrite": 0.187287,
-        "cacheRead": 0.014983
+        "input": 0.119936,
+        "output": 0.404784,
+        "cacheWrite": 0.1874,
+        "cacheRead": 0.014992
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -571,10 +571,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.79796,
-        "output": 5.39388,
-        "cacheWrite": 2.24745,
-        "cacheRead": 0.179796
+        "input": 1.79904,
+        "output": 5.39712,
+        "cacheWrite": 2.2488,
+        "cacheRead": 0.179904
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-09",
-  "notice": "DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
+  "updatedAt": "2026-10-27",
+  "notice": "Gemini 4 Argonは2026-11-30まで導入料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）、12月1日以降は各単価が2倍です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価で計算します。GPT-6.1 TerraはStandard・入力272K以下・キャッシュ30分保持の単価です。1回の入力が272Kを超えると、そのリクエスト全体の入力・キャッシュ単価は2倍、出力単価は1.5倍です。DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
   "models": [
     {
       "id": "gpt-6-astra",
@@ -25,6 +25,18 @@
         "cacheRead": 0.1
       },
       "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+    },
+    {
+      "id": "gpt-6.1-terra",
+      "provider": "OpenAI",
+      "name": "GPT-6.1 Terra",
+      "pricing": {
+        "input": 1,
+        "output": 5,
+        "cacheWrite": 1.25,
+        "cacheRead": 0.05
+      },
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-terra"
     },
     {
       "id": "gpt-6-sol",
@@ -159,18 +171,6 @@
       "source": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
     {
-      "id": "claude-opus-4.8",
-      "provider": "Anthropic",
-      "name": "Claude Opus 4.8",
-      "pricing": {
-        "input": 5,
-        "output": 25,
-        "cacheWrite": 6.25,
-        "cacheRead": 0.5
-      },
-      "source": "https://claude.com/pricing#api"
-    },
-    {
       "id": "claude-sonnet-5.5",
       "provider": "Anthropic",
       "name": "Claude Sonnet 5.5",
@@ -241,6 +241,18 @@
         "cacheRead": 0.2
       },
       "source": "https://docs.x.ai/developers/pricing"
+    },
+    {
+      "id": "gemini-4-argon",
+      "provider": "Google",
+      "name": "Gemini 4 Argon",
+      "pricing": {
+        "input": 2,
+        "output": 10,
+        "cacheWrite": 2,
+        "cacheRead": 0.1
+      },
+      "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
       "id": "gemini-3.8-flash",
@@ -385,6 +397,18 @@
         "cacheRead": 0.06
       },
       "source": "https://platform.minimax.io/subscribe/token-plan?tab=api-enterprise"
+    },
+    {
+      "id": "kimi-k3.1-pro",
+      "provider": "Moonshot AI",
+      "name": "Kimi K3.1 Pro",
+      "pricing": {
+        "input": 2,
+        "output": 10,
+        "cacheWrite": 2,
+        "cacheRead": 0.2
+      },
+      "source": "https://platform.kimi.ai/"
     },
     {
       "id": "kimi-k3",

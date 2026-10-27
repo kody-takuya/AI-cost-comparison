@@ -20,6 +20,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /<title>LLM Cost/);
   assert.match(html, /LLM Cost Comparison/);
   assert.match(html, /GPT-6 Astra/);
+  assert.match(html, /GPT-6\.1 Terra/);
   assert.match(html, /GPT-6 Sol/);
   assert.match(html, /GPT-6 Luna/);
   assert.match(html, /GPT-5\.6 Sol/);
@@ -33,13 +34,15 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /V4 Proは2026-09-14 13:00 JST以降/);
   assert.match(html, /Claude Opus 5/);
   assert.match(html, /Claude Opus 5\.5/);
-  assert.doesNotMatch(html, /Claude Haiku 4\.5/);
+  assert.doesNotMatch(html, /Claude (?:Opus|Sonnet|Haiku) 4(?:\D|$)/);
   assert.match(html, /Claude Fable 5\.1/);
   assert.match(html, /Claude Sonnet 5/);
   assert.match(html, /Gemini 3\.7 Flash/);
   assert.match(html, /Gemini 3\.6 Flash/);
   assert.match(html, /Gemini 3\.5 Flash-Lite/);
   assert.match(html, /Kimi K3/);
+  assert.match(html, /Kimi K3\.1 Pro/);
+  assert.match(html, /Gemini 4 Argon/);
   assert.match(html, /Muse Spark 1\.2/);
   assert.match(html, /Muse Spark 1\.3/);
   assert.doesNotMatch(html, /Muse Spark 1\.1/);

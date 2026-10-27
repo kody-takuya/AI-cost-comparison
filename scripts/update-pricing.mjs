@@ -160,7 +160,7 @@ function qwenChinaRates(text, modelName) {
   };
 }
 
-function parseIntroductoryGeminiFlashRates(segment, id) {
+function parseIntroductoryGeminiFlashRates(segment, id, standardStartsAt = Date.UTC(2027, 0, 1)) {
   const standard = segment.slice(0, segment.indexOf("Batch"));
   const rowPrices = (startLabel, endLabel) => {
     const start = standard.indexOf(startLabel);
@@ -176,7 +176,7 @@ function parseIntroductoryGeminiFlashRates(segment, id) {
   if (!inputRates.length || !outputRates.length || !cacheRates.length) {
     throw new Error(`${id} prices not found`);
   }
-  const scheduledIndex = Date.now() >= Date.UTC(2027, 0, 1) ? 1 : 0;
+  const scheduledIndex = Date.now() >= standardStartsAt ? 1 : 0;
   const pick = (rates) => rates[Math.min(scheduledIndex, rates.length - 1)];
   const input = pick(inputRates);
   return {
@@ -200,6 +200,11 @@ const checks = [
     id: "gpt-6.1-sol",
     url: "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
     parse: (text) => parseOpenAITextRates(text, "GPT-6.1 Sol"),
+  },
+  {
+    id: "gpt-6.1-terra",
+    url: "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
+    parse: (text) => parseOpenAITextRates(text, "GPT-6.1 Terra"),
   },
   {
     id: "gpt-6-sol",
@@ -325,6 +330,17 @@ const checks = [
     },
   },
   {
+    id: "gemini-4-argon",
+    url: "https://ai.google.dev/gemini-api/docs/pricing",
+    parse: (text) => {
+      const start = text.indexOf("Gemini 4 Argon");
+      if (start < 0) throw new Error("Gemini 4 Argon pricing section not found");
+      return parseIntroductoryGeminiFlashRates(
+        text.slice(start), "Gemini 4 Argon", Date.UTC(2026, 11, 1),
+      );
+    },
+  },
+  {
     id: "gemini-3.8-flash",
     url: "https://ai.google.dev/gemini-api/docs/pricing",
     parse: (text) => {
@@ -421,10 +437,28 @@ const checks = [
     },
   },
   {
+    id: "kimi-k3.1-pro",
+    url: "https://platform.kimi.ai/",
+    parse: (text) => {
+      const start = text.indexOf("K3.1 Pro ");
+      const end = text.indexOf("K3.1 Pro Highspeed", start);
+      if (start < 0 || end < 0) throw new Error("Kimi K3.1 Pro pricing section not found");
+      const segment = text.slice(start, end);
+      const rate = (label) => {
+        const value = Number(segment.match(new RegExp(`${label}\\s*\\$([\\d.]+)`, "i"))?.[1]);
+        if (!value) throw new Error(`Kimi K3.1 Pro ${label} price not found`);
+        return value;
+      };
+      return { input: rate("Input"), output: rate("Output"), cacheWrite: rate("Cache Write"), cacheRead: rate("Cache Hit") };
+    },
+  },
+  {
     id: "kimi-k3",
     url: "https://platform.kimi.ai/",
     parse: (text) => {
-      const segment = text.slice(text.indexOf("K3"));
+      const start = text.indexOf("K3 Kimi");
+      if (start < 0) throw new Error("Kimi K3 pricing section not found");
+      const segment = text.slice(start, text.indexOf("Official Tools", start));
       const cacheRead = Number(segment.match(/Cache Hit\s*\$([\d.]+)/i)?.[1]);
       const input = Number(segment.match(/Input\s*\$([\d.]+)/i)?.[1]);
       const output = Number(segment.match(/Output\s*\$([\d.]+)/i)?.[1]);

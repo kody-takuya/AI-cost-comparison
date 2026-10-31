@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-30",
+  "updatedAt": "2026-10-31",
   "notice": "Gemini 4 Argonは2026-11-30まで導入料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）、12月1日以降は各単価が2倍です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価で計算します。GPT-6.1 TerraはStandard・入力272K以下・キャッシュ30分保持の単価です。1回の入力が272Kを超えると、そのリクエスト全体の入力・キャッシュ単価は2倍、出力単価は1.5倍です。DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
   "models": [
     {
@@ -571,10 +571,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.80132,
-        "output": 5.40396,
-        "cacheWrite": 2.25165,
-        "cacheRead": 0.15011
+        "input": 1.80372,
+        "output": 5.41116,
+        "cacheWrite": 2.25465,
+        "cacheRead": 0.15031
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -583,10 +583,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.120088,
-        "output": 0.405297,
-        "cacheWrite": 0.187637,
-        "cacheRead": 0.015011
+        "input": 0.120248,
+        "output": 0.405837,
+        "cacheWrite": 0.187887,
+        "cacheRead": 0.015031
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -595,10 +595,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.80132,
-        "output": 5.40396,
-        "cacheWrite": 2.25165,
-        "cacheRead": 0.180132
+        "input": 1.80372,
+        "output": 5.41116,
+        "cacheWrite": 2.25465,
+        "cacheRead": 0.180372
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

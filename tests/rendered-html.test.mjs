@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { parseMuseWonderRates } from "../scripts/meta-pricing.mjs";
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -56,6 +57,9 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Gemini 3\.1 Pro/);
   assert.match(html, /Gemini 3 Flash/);
   assert.match(html, /Gemini 3\.1 Flash-Lite/);
+  assert.match(html, /Muse Wonder 1\.0/);
+  assert.doesNotMatch(html, /Muse Wonder Full/);
+  assert.doesNotMatch(html, /rates-muse-wonder-full/);
   assert.match(html, /Muse Spark 1\.2/);
   assert.match(html, /Muse Spark 1\.3/);
   assert.doesNotMatch(html, /Muse Spark 1\.1/);
@@ -75,4 +79,11 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /キャッシュ読込/);
   assert.match(html, /aria-sort="descending"/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/);
+});
+
+test("parses Muse Wonder Standard prices without using other models", () => {
+  const section = "Model: muse-wonder-1.0 . Usage Contributor mode (per 1M tokens) Standard mode (per 1M tokens) Cached input Not available $0.20 Input Not available $4.00 Output Not available $20.00 Muse Spark Cached input $0.002 $0.15 Input $0.10 $1.25 Output $0.20 $4.25";
+  assert.deepEqual(parseMuseWonderRates(section), { input: 4, output: 20, cacheWrite: 4, cacheRead: 0.2 });
+  assert.throws(() => parseMuseWonderRates(section.replace("Output Not available $20.00", "Output unavailable")), /output price not found/);
+  assert.throws(() => parseMuseWonderRates("Muse Spark Input $1.25 Output $4.25"), /pricing section not found/);
 });

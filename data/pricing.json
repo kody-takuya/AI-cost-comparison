@@ -1,6 +1,6 @@
 {
   "updatedAt": "2026-11-10",
-  "notice": "Muse Emberは1回の入力（キャッシュを含む）が20万トークン以下と超過の場合を別行で表示しています。超過時はリクエスト全体に長文単価が適用されます。キャッシュ書込欄は通常入力単価です。Fable 5.2のキャッシュ書込は5分保持の単価です。Gemini 4 Argonは2026-11-30まで導入料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）、12月1日以降は各単価が2倍です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価で計算します。GPT-6.1 TerraはStandard・入力272K以下・キャッシュ30分保持の単価です。1回の入力が272Kを超えると、そのリクエスト全体の入力・キャッシュ単価は2倍、出力単価は1.5倍です。DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。",
+  "notice": "Muse Emberは1回の入力（キャッシュを含む）が20万トークン以下と超過の場合を別行で表示しています。超過時はリクエスト全体に長文単価が適用されます。キャッシュ書込欄は通常入力単価です。Fable 5.2のキャッシュ書込は5分保持の単価です。Gemini 4 Argonは2026-11-30まで導入料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）、12月1日以降は各単価が2倍です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価で計算します。GPT-6.1 TerraはStandard・入力272K以下・キャッシュ30分保持の単価です。1回の入力が272Kを超えると、そのリクエスト全体の入力・キャッシュ単価は2倍、出力単価は1.5倍です。DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。Gemini 4 Carbonは2026-10-28の公式発表に基づく限定・段階的提供モデルです。表示は導入予定料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）で、一般提供は未確認です。導入期間終了後は入力$4・出力$20となりますが、終了日は未公表です。キャッシュ書込単価は未公表のため通常入力単価で仮計算します。Carbonの単価は自動更新対象外です。",
   "models": [
     {
       "id": "gpt-6-astra",
@@ -97,30 +97,6 @@
         "cacheRead": 0.02
       },
       "source": "https://developers.openai.com/api/docs/pricing"
-    },
-    {
-      "id": "gpt-5.4",
-      "provider": "OpenAI",
-      "name": "GPT-5.4",
-      "pricing": {
-        "input": 2.5,
-        "output": 15,
-        "cacheWrite": null,
-        "cacheRead": 0.25
-      },
-      "source": "https://developers.openai.com/api/docs/models/gpt-5.4"
-    },
-    {
-      "id": "gpt-5.4-mini",
-      "provider": "OpenAI",
-      "name": "GPT-5.4 mini",
-      "pricing": {
-        "input": 0.75,
-        "output": 4.5,
-        "cacheWrite": null,
-        "cacheRead": 0.075
-      },
-      "source": "https://developers.openai.com/api/docs/models/gpt-5.4-mini"
     },
     {
       "id": "claude-fable-5.2",
@@ -255,6 +231,18 @@
       "source": "https://docs.x.ai/developers/pricing"
     },
     {
+      "id": "gemini-4-carbon",
+      "provider": "Google",
+      "name": "Gemini 4 Carbon（限定提供・導入予定料金）",
+      "pricing": {
+        "input": 2,
+        "output": 10,
+        "cacheWrite": null,
+        "cacheRead": 0.1
+      },
+      "source": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/"
+    },
+    {
       "id": "gemini-4-argon",
       "provider": "Google",
       "name": "Gemini 4 Argon",
@@ -287,42 +275,6 @@
         "output": 3.75,
         "cacheWrite": 0.75,
         "cacheRead": 0.075
-      },
-      "source": "https://ai.google.dev/gemini-api/docs/pricing"
-    },
-    {
-      "id": "gemini-3.6-flash",
-      "provider": "Google",
-      "name": "Gemini 3.6 Flash",
-      "pricing": {
-        "input": 0.75,
-        "output": 3.75,
-        "cacheWrite": 0.75,
-        "cacheRead": 0.075
-      },
-      "source": "https://ai.google.dev/gemini-api/docs/pricing"
-    },
-    {
-      "id": "gemini-3.5-flash-lite",
-      "provider": "Google",
-      "name": "Gemini 3.5 Flash-Lite",
-      "pricing": {
-        "input": 0.3,
-        "output": 2.5,
-        "cacheWrite": 0.3,
-        "cacheRead": 0.03
-      },
-      "source": "https://ai.google.dev/gemini-api/docs/pricing"
-    },
-    {
-      "id": "gemini-3.5-flash",
-      "provider": "Google",
-      "name": "Gemini 3.5 Flash",
-      "pricing": {
-        "input": 0.3,
-        "output": 2.5,
-        "cacheWrite": 0.3,
-        "cacheRead": 0.03
       },
       "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
@@ -647,18 +599,6 @@
         "output": 1.18088,
         "cacheWrite": 0.369025,
         "cacheRead": 0.029522
-      },
-      "source": "https://help.aliyun.com/en/model-studio/model-pricing"
-    },
-    {
-      "id": "qwen3.6-flash",
-      "provider": "Alibaba",
-      "name": "Qwen3.6 Flash",
-      "pricing": {
-        "input": 0.177132,
-        "output": 1.062792,
-        "cacheWrite": 0.221415,
-        "cacheRead": 0.017713
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     }

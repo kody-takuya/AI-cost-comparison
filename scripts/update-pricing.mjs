@@ -235,16 +235,6 @@ const checks = [
     parse: (text) => parseOpenAIPricingRow(text, "gpt-5.6-luna"),
   },
   {
-    id: "gpt-5.4",
-    url: "https://developers.openai.com/api/docs/models/gpt-5.4",
-    parse: (text) => parseOpenAITextRates(text, "GPT-5.4"),
-  },
-  {
-    id: "gpt-5.4-mini",
-    url: "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
-    parse: (text) => parseOpenAITextRates(text, "GPT-5.4 mini"),
-  },
-  {
     id: "claude-sonnet-5.5",
     url: "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
     parse: (text) => parseAnthropicModelOverviewRates(text, "Claude Sonnet 5.5"),
@@ -383,39 +373,6 @@ const checks = [
       const start = text.indexOf("Gemini 3.7 Flash");
       const segment = text.slice(start, text.indexOf("Gemini 3.6 Flash", start));
       return parseIntroductoryGeminiFlashRates(segment, "Gemini 3.7 Flash");
-    },
-  },
-  {
-    id: "gemini-3.6-flash",
-    url: "https://ai.google.dev/gemini-api/docs/pricing",
-    parse: (text) => {
-      const start = text.indexOf("Gemini 3.6 Flash");
-      const segment = text.slice(start, text.indexOf("Gemini 3.5 Flash-Lite", start));
-      return parseIntroductoryGeminiFlashRates(segment, "Gemini 3.6 Flash");
-    },
-  },
-  {
-    id: "gemini-3.5-flash-lite",
-    url: "https://ai.google.dev/gemini-api/docs/pricing",
-    parse: (text) => {
-      const segment = text.slice(text.indexOf("Gemini 3.5 Flash-Lite"), text.indexOf("Gemini 3.1 Flash-Lite"));
-      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
-      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
-      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
-      if (!input || !output || !cacheRead) throw new Error("Gemini 3.5 Flash-Lite prices not found");
-      return { input, output, cacheWrite: input, cacheRead };
-    },
-  },
-  {
-    id: "gemini-3.5-flash",
-    url: "https://ai.google.dev/gemini-api/docs/pricing",
-    parse: (text) => {
-      const segment = text.slice(text.indexOf("Gemini 3.5 Flash"), text.indexOf("Gemini 3.1 Pro"));
-      const input = Number(segment.match(/Input price[^$]*\$([\d.]+)/i)?.[1]);
-      const output = Number(segment.match(/Output price[^$]*\$([\d.]+)/i)?.[1]);
-      const cacheRead = Number(segment.match(/Context caching price[^$]*\$([\d.]+)/i)?.[1]);
-      if (!input || !output || !cacheRead) throw new Error("Gemini 3.5 Flash prices not found");
-      return { input, output, cacheWrite: input, cacheRead };
     },
   },
   {

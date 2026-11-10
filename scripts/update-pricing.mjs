@@ -255,6 +255,11 @@ const checks = [
     parse: (text) => parseAnthropicModelOverviewRates(text, "Claude Haiku 5.5"),
   },
   {
+    id: "claude-fable-5.2",
+    url: "https://platform.claude.com/docs/en/models/fable-5-2/overview",
+    parse: (text) => parseAnthropicModelOverviewRates(text, "Claude Fable 5.2"),
+  },
+  {
     id: "claude-fable-5.1",
     url: "https://platform.claude.com/docs/en/about-claude/pricing",
     parse: (text) =>
@@ -308,6 +313,28 @@ const checks = [
       const buildValues = [...build.matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
       if (buildValues.length < 3) throw new Error("Grok Build 0.1 prices not found");
       return { input: buildValues[0], cacheRead: buildValues[1], cacheWrite: buildValues[0], output: buildValues[2] };
+    },
+  },
+  {
+    id: "muse-ember-1.0",
+    url: "https://dev.meta.ai/docs/pricing-rate-limits",
+    parse: (text) => {
+      const start = text.indexOf("Model: `muse-ember-1.0`") >= 0
+        ? text.indexOf("Model: `muse-ember-1.0`") : text.indexOf("Model: muse-ember-1.0");
+      const end = text.indexOf("Token pricing notes", start);
+      if (start < 0 || end < 0) throw new Error("Muse Ember pricing section not found");
+      const segment = text.slice(start, end);
+      const pair = (label) => {
+        const match = segment.match(new RegExp(`${label}\\s*\\$([\\d.]+)\\s*\\$([\\d.]+)`, "i"));
+        if (!match) throw new Error(`Muse Ember ${label} prices not found`);
+        return [Number(match[1]), Number(match[2])];
+      };
+      const cached = pair("Cached input");
+      const input = pair("(?<!Cached )Input");
+      const output = pair("Output");
+      const tier = (index) => ({ input: input[index], output: output[index], cacheWrite: input[index], cacheRead: cached[index] });
+      update("muse-ember-1.0-long-context", tier(1));
+      return tier(0);
     },
   },
   {

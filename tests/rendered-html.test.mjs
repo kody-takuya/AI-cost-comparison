@@ -36,6 +36,9 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Claude Opus 5\.5/);
   assert.doesNotMatch(html, /Claude (?:Opus|Sonnet|Haiku) 4(?:\D|$)/);
   assert.match(html, /Claude Fable 5\.1/);
+  assert.match(html, /Claude Fable 5\.2/);
+  assert.match(html, /Muse Ember 1\.0 \(≤200k\/回\)/);
+  assert.match(html, /Muse Ember 1\.0 \(&gt;200k\/回\)/);
   assert.match(html, /Claude Sonnet 5/);
   assert.match(html, /Gemini 3\.7 Flash/);
   assert.match(html, /Gemini 3\.6 Flash/);

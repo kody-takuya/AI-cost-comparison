@@ -583,10 +583,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.79892,
-        "output": 5.39676,
-        "cacheWrite": 2.24865,
-        "cacheRead": 0.14991
+        "input": 1.79952,
+        "output": 5.39856,
+        "cacheWrite": 2.2494,
+        "cacheRead": 0.14996
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -595,10 +595,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119928,
-        "output": 0.404757,
-        "cacheWrite": 0.187387,
-        "cacheRead": 0.014991
+        "input": 0.119968,
+        "output": 0.404892,
+        "cacheWrite": 0.18745,
+        "cacheRead": 0.014996
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -607,10 +607,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.79892,
-        "output": 5.39676,
-        "cacheWrite": 2.24865,
-        "cacheRead": 0.179892
+        "input": 1.79952,
+        "output": 5.39856,
+        "cacheWrite": 2.2494,
+        "cacheRead": 0.179952
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

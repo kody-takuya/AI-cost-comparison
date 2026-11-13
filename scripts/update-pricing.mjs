@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { parseMuseWonderRates } from "./meta-pricing.mjs";
-import { parseGeminiCarbonRates } from "./gemini-pricing.mjs";
+import { parseGeminiCarbonRates, parseGeminiHydrogenRates } from "./gemini-pricing.mjs";
 
 const dataPath = new URL("../data/pricing.json", import.meta.url);
 const data = JSON.parse(await readFile(dataPath, "utf8"));
@@ -190,6 +190,11 @@ function parseIntroductoryGeminiFlashRates(segment, id, standardStartsAt = Date.
 }
 
 const checks = [
+  {
+    id: "gemini-4-hydrogen",
+    url: "https://aistudio.google.com/docs/pricing",
+    parse: parseGeminiHydrogenRates,
+  },
   {
     id: "gemini-4-carbon",
     url: "https://aistudio.google.com/docs/pricing",

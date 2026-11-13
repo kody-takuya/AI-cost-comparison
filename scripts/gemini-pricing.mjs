@@ -27,3 +27,32 @@ export function parseGeminiCarbonRates(text, now = Date.now()) {
     cacheRead: rate("Context caching price", "Grounding with Google Search"),
   };
 }
+
+// Require exactly one paid Standard price per row; never substitute another tier.
+export function parseGeminiHydrogenRates(text) {
+  const start = text.indexOf("Gemini 4 Hydrogen");
+  const nextModel = text.indexOf("Gemini 3.8 Flash", start);
+  if (start < 0 || nextModel < 0) throw new Error("Hydrogen pricing section not found");
+  const section = text.slice(start, nextModel);
+  const standardStart = section.indexOf("Standard");
+  const batchStart = section.indexOf("Batch", standardStart);
+  if (standardStart < 0 || batchStart < 0) throw new Error("Hydrogen Standard pricing not found");
+  const standard = section.slice(standardStart, batchStart);
+  const rate = (label, nextLabel) => {
+    const from = standard.indexOf(label);
+    const to = standard.indexOf(nextLabel, from);
+    if (from < 0 || to < 0) throw new Error(`Hydrogen ${label} row not found`);
+    const values = [...standard.slice(from, to).matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
+    if (values.length !== 1 || !Number.isFinite(values[0]) || values[0] <= 0) {
+      throw new Error(`Hydrogen ${label} price not found or ambiguous`);
+    }
+    return values[0];
+  };
+  const input = rate("Input price", "Output price");
+  return {
+    input,
+    output: rate("Output price", "Context caching price"),
+    cacheWrite: input,
+    cacheRead: rate("Context caching price", "Grounding with Google Search"),
+  };
+}

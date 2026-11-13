@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { parseMuseWonderRates } from "../scripts/meta-pricing.mjs";
-import { parseGeminiCarbonRates } from "../scripts/gemini-pricing.mjs";
+import { parseGeminiCarbonRates, parseGeminiHydrogenRates } from "../scripts/gemini-pricing.mjs";
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -49,6 +49,8 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Kimi K3\.1 Pro/);
   assert.match(html, /Gemini 4 Argon/);
   assert.match(html, /Gemini 4 Carbon/);
+  assert.match(html, /Gemini 4 Hydrogen/);
+  assert.match(html, /gemini-4-hydrogen/);
   assert.doesNotMatch(html, /限定提供・導入予定料金/);
   assert.match(html, /Gemini 4 Carbonは有料APIで提供中/);
   assert.doesNotMatch(html, /Carbonの単価は自動更新対象外|一般提供は未確認|終了日は未公表/);
@@ -97,4 +99,13 @@ test("Carbon uses Standard rates and switches after the introductory period", ()
   assert.deepEqual(parseGeminiCarbonRates(source, Date.parse("2026-12-01T00:00:00Z")), { input: 4, output: 20, cacheWrite: 4, cacheRead: 0.2 });
   assert.throws(() => parseGeminiCarbonRates(source.replace("$0.10 $0.20", "$0.10")), /scheduled prices not found/);
   assert.throws(() => parseGeminiCarbonRates("Gemini 4 Argon Standard $2"), /section not found/);
+});
+
+test("Hydrogen uses paid Standard prices, not free or discounted tiers", () => {
+  const source = "Gemini 4 Argon Standard $2 Gemini 4 Hydrogen Standard Input price Free of charge $1.50 Output price (including thinking tokens) Free of charge $7.50 Context caching price Free of charge $0.075 Implicit caching only Grounding with Google Search $14 Batch Input price $0.75 Output price $3.75 Gemini 3.8 Flash Standard Input price $99";
+  assert.deepEqual(parseGeminiHydrogenRates(source), { input: 1.5, output: 7.5, cacheWrite: 1.5, cacheRead: 0.075 });
+  assert.throws(() => parseGeminiHydrogenRates(source.replace("$7.50", "unavailable")), /price not found/);
+  assert.throws(() => parseGeminiHydrogenRates(source.replace("$1.50", "$1.50 $2.00")), /ambiguous/);
+  assert.throws(() => parseGeminiHydrogenRates(source.replace("Standard Input price Free", "Input price Free")), /Standard pricing not found/);
+  assert.throws(() => parseGeminiHydrogenRates("Gemini 4 Argon Standard $2"), /section not found/);
 });

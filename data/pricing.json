@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-13",
+  "updatedAt": "2026-11-14",
   "notice": "Muse Emberは1回の入力（キャッシュを含む）が20万トークン以下と超過の場合を別行で表示しています。超過時はリクエスト全体に長文単価が適用されます。キャッシュ書込欄は通常入力単価です。Fable 5.2のキャッシュ書込は5分保持の単価です。Gemini 4 Argonは2026-11-30まで導入料金（100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10）、12月1日以降は各単価が2倍です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価で計算します。GPT-6.1 TerraはStandard・入力272K以下・キャッシュ30分保持の単価です。1回の入力が272Kを超えると、そのリクエスト全体の入力・キャッシュ単価は2倍、出力単価は1.5倍です。DeepSeekは平日10:00–13:00、15:00–19:00 JSTがピーク、それ以外はオフピークです。V4 Proは2026-09-14 13:00 JST以降、V4.1 Pro登場までV4.1 Flashへルーティングされ同単価になります。Claude Haiku 5.5の表示単価は1回のプロンプトが10万トークン以下の場合です。10万超では各単価が5倍になります。Gemini 4 Carbonは有料APIで提供中です。Standard料金は2026-11-30まで100万トークンあたり入力$2・出力$10・キャッシュ読込$0.10、12月1日以降は入力$4・出力$20・キャッシュ読込$0.20です。明示的キャッシュは非対応のため、キャッシュ書込欄は通常入力単価を使用します。Muse Wonder 1.0はStandard modeのAPI料金です。長文割増はなく、キャッシュ書込欄は通常入力単価を使用します。Gemini 4 HydrogenはStandardの有料API料金です。出力単価には思考トークンを含みます。暗黙的キャッシュのみ対応し、キャッシュ書込欄は通常入力単価を使用します。",
   "models": [
     {
@@ -583,10 +583,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Max",
       "pricing": {
-        "input": 1.79952,
-        "output": 5.39856,
-        "cacheWrite": 2.2494,
-        "cacheRead": 0.14996
+        "input": 1.79856,
+        "output": 5.39568,
+        "cacheWrite": 2.2482,
+        "cacheRead": 0.14988
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
@@ -595,10 +595,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.8 Flash",
       "pricing": {
-        "input": 0.119968,
-        "output": 0.404892,
-        "cacheWrite": 0.18745,
-        "cacheRead": 0.014996
+        "input": 0.119904,
+        "output": 0.404676,
+        "cacheWrite": 0.18735,
+        "cacheRead": 0.014988
       },
       "source": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
@@ -607,10 +607,10 @@
       "provider": "Alibaba",
       "name": "Qwen3.7 Max",
       "pricing": {
-        "input": 1.79952,
-        "output": 5.39856,
-        "cacheWrite": 2.2494,
-        "cacheRead": 0.179952
+        "input": 1.79856,
+        "output": 5.39568,
+        "cacheWrite": 2.2482,
+        "cacheRead": 0.179856
       },
       "source": "https://help.aliyun.com/en/model-studio/model-pricing"
     },

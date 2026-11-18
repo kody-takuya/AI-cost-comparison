@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { parseOpenAIStandardRates } from "./openai-pricing.mjs";
 import { parseMuseWonderRates } from "./meta-pricing.mjs";
 import { parseGeminiCarbonRates, parseGeminiHydrogenRates } from "./gemini-pricing.mjs";
 
@@ -190,6 +191,16 @@ function parseIntroductoryGeminiFlashRates(segment, id, standardStartsAt = Date.
 }
 
 const checks = [
+  {
+    id: "gpt-6.2-astra",
+    url: "https://developers.openai.com/api/docs/models/gpt-6.2-astra",
+    parse: (text) => parseOpenAIStandardRates(text, "GPT-6.2 Astra"),
+  },
+  {
+    id: "gpt-6.2-sol",
+    url: "https://developers.openai.com/api/docs/models/gpt-6.2-sol",
+    parse: (text) => parseOpenAIStandardRates(text, "GPT-6.2 Sol"),
+  },
   {
     id: "gemini-4-hydrogen",
     url: "https://aistudio.google.com/docs/pricing",

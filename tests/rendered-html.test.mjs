@@ -3,7 +3,7 @@ import test from "node:test";
 import { parseMuseWonderRates } from "../scripts/meta-pricing.mjs";
 import { parseOpenAIStandardRates } from "../scripts/openai-pricing.mjs";
 import { readFile } from "node:fs/promises";
-import { parseGeminiCarbonRates, parseGeminiHydrogenRates } from "../scripts/gemini-pricing.mjs";
+import { parseGeminiCarbonRates, parseGeminiHydrogenRates, parseGeminiNeonRates } from "../scripts/gemini-pricing.mjs";
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -55,6 +55,8 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Kimi K3\.1 Pro/);
   assert.match(html, /Gemini 4 Argon/);
   assert.match(html, /Gemini 4 Carbon/);
+  assert.match(html, /Gemini 4 Neon/);
+  assert.match(html, /gemini-4-neon/);
   assert.match(html, /Gemini 4 Hydrogen/);
   assert.match(html, /gemini-4-hydrogen/);
   assert.doesNotMatch(html, /限定提供・導入予定料金/);
@@ -141,4 +143,10 @@ test("GPT-6.2 entries and updater keep the official four-rate ordering", async (
     assert.ok(updater.includes(`id: "${id}"`));
     assert.ok(updater.includes(`url: "${model.source}"`));
   }
+});
+
+test("Neon uses the paid Standard tier, not Batch or adjacent models", () => {
+  const source = "Gemini 4 Argon Standard $2 Gemini 4 Neon Standard Input price Not available $3.00 Output price (including thinking tokens) Not available $15.00 Context caching price Not available $0.15 Implicit caching only Grounding with Google Search $14 Batch Input price $1.50 Output price $7.50 Gemini 4 Hydrogen Standard Input price $1.50";
+  assert.deepEqual(parseGeminiNeonRates(source), { input: 3, output: 15, cacheWrite: 3, cacheRead: 0.15 });
+  assert.throws(() => parseGeminiNeonRates(source.replace("$3.00", "$3.00 $4.00")), /ambiguous/);
 });

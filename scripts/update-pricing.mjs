@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { parseOpenAIStandardRates } from "./openai-pricing.mjs";
 import { parseMuseWonderRates } from "./meta-pricing.mjs";
-import { parseGeminiCarbonRates, parseGeminiHydrogenRates } from "./gemini-pricing.mjs";
+import { parseGeminiCarbonRates, parseGeminiHydrogenRates, parseGeminiNeonRates } from "./gemini-pricing.mjs";
 
 const dataPath = new URL("../data/pricing.json", import.meta.url);
 const data = JSON.parse(await readFile(dataPath, "utf8"));
@@ -200,6 +200,11 @@ const checks = [
     id: "gpt-6.2-sol",
     url: "https://developers.openai.com/api/docs/models/gpt-6.2-sol",
     parse: (text) => parseOpenAIStandardRates(text, "GPT-6.2 Sol"),
+  },
+  {
+    id: "gemini-4-neon",
+    url: "https://aistudio.google.com/docs/pricing",
+    parse: parseGeminiNeonRates,
   },
   {
     id: "gemini-4-hydrogen",

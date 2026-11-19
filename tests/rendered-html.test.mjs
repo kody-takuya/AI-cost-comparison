@@ -60,7 +60,7 @@ test("renders the LLM cost comparison", async () => {
   assert.match(html, /Gemini 4 Hydrogen/);
   assert.match(html, /gemini-4-hydrogen/);
   assert.doesNotMatch(html, /限定提供・導入予定料金/);
-  assert.match(html, /Gemini 4 Carbonは有料APIで提供中/);
+  assert.doesNotMatch(html, /Gemini 4 Carbonは有料APIで提供中|Gemini 4 Carbon[^<]*導入料金/);
   assert.doesNotMatch(html, /Carbonの単価は自動更新対象外|一般提供は未確認|終了日は未公表/);
   assert.doesNotMatch(html, /GPT-5\.4/);
   assert.doesNotMatch(html, /Gemini 3\.[56]/);
@@ -101,11 +101,13 @@ test("parses Muse Wonder Standard prices without using other models", () => {
   assert.throws(() => parseMuseWonderRates("Muse Spark Input $1.25 Output $4.25"), /pricing section not found/);
 });
 
-test("Carbon uses Standard rates and switches after the introductory period", () => {
+test("Carbon always uses regular Standard rates", () => {
   const source = "Gemini 4 Carbon Standard Input price $2.00 through November 30, 2026. $4.00 starting December 1, 2026. Output price $10.00 $20.00 Context caching price $0.10 $0.20 Grounding with Google Search $14 Batch Input price $1 $2 Output price $5 $10 Gemini 4 Argon Standard Input price $99";
-  assert.deepEqual(parseGeminiCarbonRates(source, Date.parse("2026-11-30T23:59:59Z")), { input: 2, output: 10, cacheWrite: 2, cacheRead: 0.1 });
-  assert.deepEqual(parseGeminiCarbonRates(source, Date.parse("2026-12-01T00:00:00Z")), { input: 4, output: 20, cacheWrite: 4, cacheRead: 0.2 });
-  assert.throws(() => parseGeminiCarbonRates(source.replace("$0.10 $0.20", "$0.10")), /scheduled prices not found/);
+  const regular = { input: 4, output: 20, cacheWrite: 4, cacheRead: 0.2 };
+  assert.deepEqual(parseGeminiCarbonRates(source), regular);
+  const postPromo = source.replace("$2.00 through November 30, 2026. ", "").replace("$10.00 ", "").replace("$0.10 ", "");
+  assert.deepEqual(parseGeminiCarbonRates(postPromo), regular);
+  assert.throws(() => parseGeminiCarbonRates(source.replace("$0.10 $0.20", "$0.10")), /regular price not found/);
   assert.throws(() => parseGeminiCarbonRates("Gemini 4 Argon Standard $2"), /section not found/);
 });
 

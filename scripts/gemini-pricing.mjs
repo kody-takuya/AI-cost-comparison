@@ -1,5 +1,5 @@
 // Isolate Carbon Standard rates from Batch/Flex/Priority and other models.
-export function parseGeminiCarbonRates(text, now = Date.now()) {
+export function parseGeminiCarbonRates(text) {
   const start = text.indexOf("Gemini 4 Carbon");
   const nextModel = text.indexOf("Gemini 4 Argon", start);
   if (start < 0 || nextModel < 0) throw new Error("Gemini 4 Carbon pricing section not found");
@@ -8,23 +8,24 @@ export function parseGeminiCarbonRates(text, now = Date.now()) {
   const batchStart = section.indexOf("Batch", standardStart);
   if (standardStart < 0 || batchStart < 0) throw new Error("Carbon Standard pricing not found");
   const standard = section.slice(standardStart, batchStart);
-  const index = now >= Date.UTC(2026, 11, 1) ? 1 : 0;
-  const rate = (label, nextLabel) => {
+  const rate = (label, nextLabel, introductory) => {
     const from = standard.indexOf(label);
     const to = standard.indexOf(nextLabel, from);
     if (from < 0 || to < 0) throw new Error(`Carbon ${label} row not found`);
     const values = [...standard.slice(from, to).matchAll(/\$([\d.]+)/g)].map((match) => Number(match[1]));
-    if (values.length !== 2 || values.some((value) => !Number.isFinite(value) || value <= 0)) {
-      throw new Error(`Carbon ${label} scheduled prices not found`);
+    // Always display the regular price, including while the introductory offer is active.
+    const regular = values.at(-1);
+    if (values.length < 1 || values.length > 2 || values.some((value) => !Number.isFinite(value) || value <= 0) || regular === introductory) {
+      throw new Error(`Carbon ${label} regular price not found`);
     }
-    return values[index];
+    return regular;
   };
-  const input = rate("Input price", "Output price");
+  const input = rate("Input price", "Output price", 2);
   return {
     input,
-    output: rate("Output price", "Context caching price"),
+    output: rate("Output price", "Context caching price", 10),
     cacheWrite: input,
-    cacheRead: rate("Context caching price", "Grounding with Google Search"),
+    cacheRead: rate("Context caching price", "Grounding with Google Search", 0.1),
   };
 }
 
